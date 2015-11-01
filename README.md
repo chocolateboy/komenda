@@ -39,5 +39,6 @@ bundle exec rake spec
 
 TODO
 ----
-- `Komenda::Definition`: Allow to pass STDIN
-- `Komenda::Definition`: Allow to pass environment variables
+Add options for:
+- Passing STDIN
+- Making `run()` fail when exit status is not "0"
