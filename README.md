@@ -22,6 +22,9 @@ result.success? # => true
 result.pid      # => 32157
 ```
 
+The `run()` method has a second argument `options`, which expects these keys:
+- **`env`** (Hash): The environment variables to use. Defaults to the current process' environment.
+
 Development
 -----------
 Install dependencies:
