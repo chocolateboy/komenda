@@ -22,6 +22,18 @@ result.success? # => true
 result.pid      # => 32157
 ```
 
+Development
+-----------
+Install dependencies:
+```
+bundle install
+```
+
+Run the tests:
+```
+bundle exec rake spec
+```
+
 TODO
 ----
 - `Komenda::Definition`: Allow to pass STDIN
