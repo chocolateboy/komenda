@@ -13,7 +13,7 @@ module Komenda
       options = defaults.merge(options)
 
       @cmd = String(cmd)
-      @env = Hash(options[:env])
+      @env = Hash[Hash(options[:env]).map { |k, v| [String(k), String(v)] }]
     end
 
   end

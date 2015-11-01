@@ -6,14 +6,14 @@ describe Komenda::Definition do
     let(:cmd) { 'my command' }
 
     context 'when passing an ENV' do
-      let(:definition) { Komenda::Definition.new(cmd, {:env => {:foo => 'bar'}}) }
+      let(:definition) { Komenda::Definition.new(cmd, {:env => {:foo => 'hello', 'bar' => 12}}) }
 
       it 'sets the cmd' do
         expect(definition.cmd).to eq(cmd)
       end
 
-      it 'sets the environment' do
-        expect(definition.env).to eq({:foo => 'bar'})
+      it 'coerces and sets the environment' do
+        expect(definition.env).to eq({'foo' => 'hello', 'bar' => '12'})
       end
     end
 
