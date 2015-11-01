@@ -108,5 +108,16 @@ describe Komenda::Runner do
         end
     end
 
+    context 'when environment variables are passed' do
+      let(:cmd) { 'echo "foo=${FOO}"' }
+      let(:definition) { Komenda::Definition.new(cmd, {:env => {:FOO => 'hello'}}) }
+      let(:runner) { Komenda::Runner.new }
+      let(:result) { runner.run(definition) }
+
+      it 'sets the environment variables' do
+        expect(result.stdout).to eq("foo=hello\n")
+      end
+    end
+
   end
 end
