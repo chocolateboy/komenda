@@ -22,7 +22,23 @@ result.success? # => true
 result.pid      # => 32157
 ```
 
+The `run()` method has a second argument `options`, which expects these keys:
+- **`env`** (Hash): The environment variables to use. Defaults to the current process' environment.
+
+Development
+-----------
+Install dependencies:
+```
+bundle install
+```
+
+Run the tests:
+```
+bundle exec rake spec
+```
+
 TODO
 ----
-- `Komenda::Definition`: Allow to pass STDIN
-- `Komenda::Definition`: Allow to pass environment variables
+Add options for:
+- Passing STDIN
+- Making `run()` fail when exit status is not "0"
