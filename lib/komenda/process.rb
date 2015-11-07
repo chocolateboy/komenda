@@ -4,10 +4,16 @@ module Komenda
     attr_reader :output
     attr_reader :exit_status
 
+    include EventEmitter
+
     # @param [ProcessBuilder] process_builder
     def initialize(process_builder)
       @output = {:stdout => '', :stderr => '', :combined => ''}
       @exit_status = nil
+
+      process_builder.events.each do |event|
+        on(event[:type], &event[:listener])
+      end
 
       @thread = Thread.new { run_process(process_builder) }
       @thread.abort_on_exception = true
@@ -41,6 +47,10 @@ module Komenda
               streams_read_open.delete(stream)
             else
               data = stream.readpartial(4096)
+              emit(:stdout, data) if stdout === stream
+              emit(:stderr, data) if stderr === stream
+              emit(:output, data)
+
               @output[:stdout] += data if stdout === stream
               @output[:stderr] += data if stderr === stream
               @output[:combined] += data

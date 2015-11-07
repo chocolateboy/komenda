@@ -6,7 +6,10 @@ describe Komenda::ProcessBuilder do
     let(:command) { 'my command' }
 
     context 'when passing an ENV' do
-      let(:process_builder) { Komenda::ProcessBuilder.new(command, {:env => {:foo => 'hello', 'bar' => 12}}) }
+      let(:env) { {:foo => 'hello', 'bar' => 12} }
+      let(:on_stdout) { Proc.new {} }
+      let(:events) { {:stdout => on_stdout} }
+      let(:process_builder) { Komenda::ProcessBuilder.new(command, {:env => env, :events => events}) }
 
       it 'sets the command' do
         expect(process_builder.command).to eq(command)
@@ -14,6 +17,10 @@ describe Komenda::ProcessBuilder do
 
       it 'coerces and sets the environment' do
         expect(process_builder.env).to eq({'foo' => 'hello', 'bar' => '12'})
+      end
+
+      it 'sets events' do
+        expect(process_builder.events).to eq([{:type => :stdout, :listener => on_stdout}])
       end
     end
 

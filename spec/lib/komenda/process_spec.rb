@@ -29,6 +29,41 @@ describe Komenda::Process do
     end
   end
 
+  describe '#emit' do
+    let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world";\'' }
+
+    it 'emits event on stdout' do
+      callback = double(Proc)
+      process_builder = Komenda::ProcessBuilder.new(command)
+      process_builder.on(:stdout) { |d| callback.call(d) }
+      process = Komenda::Process.new(process_builder)
+
+      expect(callback).to receive(:call).once.with('hello')
+      process.wait_for
+    end
+
+    it 'emits event on stderr' do
+      callback = double(Proc)
+      process_builder = Komenda::ProcessBuilder.new(command)
+      process_builder.on(:stderr) { |d| callback.call(d) }
+      process = Komenda::Process.new(process_builder)
+
+      expect(callback).to receive(:call).once.with('world')
+      process.wait_for
+    end
+
+    it 'emits event on output' do
+      callback = double(Proc)
+      process_builder = Komenda::ProcessBuilder.new(command)
+      process_builder.on(:output) { |d| callback.call(d) }
+      process = Komenda::Process.new(process_builder)
+
+      expect(callback).to receive(:call).once.ordered.with('hello')
+      expect(callback).to receive(:call).once.ordered.with('world')
+      process.wait_for
+    end
+  end
+
   describe '#wait_for' do
 
     context 'when command exits successfully' do

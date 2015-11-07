@@ -26,10 +26,21 @@ The `run()` method has a second argument `options`, which expects these keys:
 - **`env`** (Hash): The environment variables to use. Defaults to the current process' environment.
 
 ### Advanced usage
-To start a process asynchronously (in a thread) use `start_process()`:
+The `build()` method creates a `ProcessBuilder` which can be used to `start()` a process in a separate thread.
+To wait for the process to finish `wait_for()` can be used:
 ```ruby
-process = Komenda.start_process('date')
+process_builder = Komenda.build('date')
+process = process_builder.start
 result = process.wait_for
+```
+
+With `ProcessBuilder.on()`, event callbacks can be registered. The callback gets executed when the process writes output:
+```ruby
+process_builder = Komenda::ProcessBuilder.new('date')
+process_builder.on(:stdout) { |output| puts "STDOUT: #{output}" }
+process_builder.on(:stderr) { |output| puts "STDERR: #{output}" }
+process_builder.on(:output) { |output| puts "Output: #{output}" }
+result = process_builder.start.wait_for
 ```
 
 Development
