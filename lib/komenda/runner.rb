@@ -1,13 +1,13 @@
 module Komenda
   class Runner
 
-    # @param [Komenda::Definition] definition
+    # @param [Komenda::ProcessBuilder] process_builder
     # @return [Komenda::Result]
-    def run(definition)
+    def run(process_builder)
       output = {:stdout => '', :stderr => '', :combined => ''}
       status = nil
 
-      Open3.popen3(definition.env, definition.command) do |stdin, stdout, stderr, wait_thr|
+      Open3.popen3(process_builder.env, process_builder.command) do |stdin, stdout, stderr, wait_thr|
         stdin.close
 
         streams_read_open = [stdout, stderr]

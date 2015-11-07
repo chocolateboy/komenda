@@ -6,9 +6,9 @@ describe Komenda::Runner do
 
     context 'when command exits successfully' do
       let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world";\'' }
-      let(:definition) { Komenda::Definition.new(command) }
+      let(:process_builder) { Komenda::ProcessBuilder.new(command) }
       let(:runner) { Komenda::Runner.new }
-      let(:result) { runner.run(definition) }
+      let(:result) { runner.run(process_builder) }
 
       it 'returns a result' do
         expect(result).to be_a(Komenda::Result)
@@ -41,9 +41,9 @@ describe Komenda::Runner do
 
     context 'when command fails' do
       let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world"; exit(1);\'' }
-      let(:definition) { Komenda::Definition.new(command) }
+      let(:process_builder) { Komenda::ProcessBuilder.new(command) }
       let(:runner) { Komenda::Runner.new }
-      let(:result) { runner.run(definition) }
+      let(:result) { runner.run(process_builder) }
 
       it 'returns a result' do
         expect(result).to be_a(Komenda::Result)
@@ -72,9 +72,9 @@ describe Komenda::Runner do
 
     context 'when command outputs mixed stdout and stderr' do
       let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "1"; sleep(0.01); STDERR.print "2"; sleep(0.01); STDOUT.print "3";\'' }
-      let(:definition) { Komenda::Definition.new(command) }
+      let(:process_builder) { Komenda::ProcessBuilder.new(command) }
       let(:runner) { Komenda::Runner.new }
-      let(:result) { runner.run(definition) }
+      let(:result) { runner.run(process_builder) }
 
       it 'sets the standard output' do
         expect(result.stdout).to eq('13')
@@ -91,9 +91,9 @@ describe Komenda::Runner do
 
     context 'when command outputs mixed stdout and stderr without delay' do
       let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "1"; STDERR.print "2"; STDOUT.print "3";\'' }
-      let(:definition) { Komenda::Definition.new(command) }
+      let(:process_builder) { Komenda::ProcessBuilder.new(command) }
       let(:runner) { Komenda::Runner.new }
-      let(:result) { runner.run(definition) }
+      let(:result) { runner.run(process_builder) }
 
       it 'sets the standard output' do
         expect(result.stdout).to eq('13')
@@ -110,9 +110,9 @@ describe Komenda::Runner do
 
     context 'when environment variables are passed' do
       let(:command) { 'echo "foo=${FOO}"' }
-      let(:definition) { Komenda::Definition.new(command, {:env => {:FOO => 'hello'}}) }
+      let(:process_builder) { Komenda::ProcessBuilder.new(command, {:env => {:FOO => 'hello'}}) }
       let(:runner) { Komenda::Runner.new }
-      let(:result) { runner.run(definition) }
+      let(:result) { runner.run(process_builder) }
 
       it 'sets the environment variables' do
         expect(result.stdout).to eq("foo=hello\n")

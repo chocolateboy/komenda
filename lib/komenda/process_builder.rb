@@ -1,5 +1,5 @@
 module Komenda
-  class Definition
+  class ProcessBuilder
 
     attr_reader :command
     attr_reader :env

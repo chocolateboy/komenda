@@ -1,6 +1,6 @@
 require 'open3'
 
-require 'komenda/definition'
+require 'komenda/process_builder'
 require 'komenda/runner'
 require 'komenda/result'
 
@@ -10,9 +10,9 @@ module Komenda
   # @param [Hash] options
   # @return [Komenda::Result]
   def self.run(command, options = {})
-    definition = Komenda::Definition.new(command, options)
+    process_builder = Komenda::ProcessBuilder.new(command, options)
     runner = Komenda::Runner.new
-    runner.run(definition)
+    runner.run(process_builder)
   end
 
 end
