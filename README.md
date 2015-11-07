@@ -6,7 +6,7 @@ Usage
 -----
 Run a command:
 ```ruby
-Komenda.run("date")
+Komenda.run('date')
 ```
 
 The `run()` method will block until the sub process finished.
@@ -25,6 +25,13 @@ result.pid      # => 32157
 The `run()` method has a second argument `options`, which expects these keys:
 - **`env`** (Hash): The environment variables to use. Defaults to the current process' environment.
 
+### Advanced usage
+To start a process asynchronously (in a thread) use `start_process()`:
+```ruby
+process = Komenda.start_process('date')
+result = process.wait_for
+```
+
 Development
 -----------
 Install dependencies:
@@ -41,4 +48,4 @@ TODO
 ----
 Add options for:
 - Passing STDIN
-- Making `run()` fail when exit status is not "0"
+- Making `run()` fail when exit status is not '0'
