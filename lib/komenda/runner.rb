@@ -7,7 +7,7 @@ module Komenda
       output = {:stdout => '', :stderr => '', :combined => ''}
       status = nil
 
-      Open3.popen3(definition.env, definition.cmd) do |stdin, stdout, stderr, wait_thr|
+      Open3.popen3(definition.env, definition.command) do |stdin, stdout, stderr, wait_thr|
         stdin.close
 
         streams_read_open = [stdout, stderr]

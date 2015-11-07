@@ -1,18 +1,18 @@
 module Komenda
   class Definition
 
-    attr_reader :cmd
+    attr_reader :command
     attr_reader :env
 
-    # @param [String] cmd
+    # @param [String] command
     # @param [Hash] options
-    def initialize(cmd, options = {})
+    def initialize(command, options = {})
       defaults = {
         :env => ENV.to_hash,
       }
       options = defaults.merge(options)
 
-      @cmd = String(cmd)
+      @command = String(command)
       @env = Hash[options[:env].to_hash.map { |k, v| [String(k), String(v)] }]
     end
 

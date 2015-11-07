@@ -5,8 +5,8 @@ describe Komenda::Runner do
   describe '#run' do
 
     context 'when command exits successfully' do
-      let(:cmd) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world";\'' }
-      let(:definition) { Komenda::Definition.new(cmd) }
+      let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world";\'' }
+      let(:definition) { Komenda::Definition.new(command) }
       let(:runner) { Komenda::Runner.new }
       let(:result) { runner.run(definition) }
 
@@ -40,8 +40,8 @@ describe Komenda::Runner do
     end
 
     context 'when command fails' do
-      let(:cmd) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world"; exit(1);\'' }
-      let(:definition) { Komenda::Definition.new(cmd) }
+      let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world"; exit(1);\'' }
+      let(:definition) { Komenda::Definition.new(command) }
       let(:runner) { Komenda::Runner.new }
       let(:result) { runner.run(definition) }
 
@@ -71,8 +71,8 @@ describe Komenda::Runner do
     end
 
     context 'when command outputs mixed stdout and stderr' do
-      let(:cmd) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "1"; sleep(0.01); STDERR.print "2"; sleep(0.01); STDOUT.print "3";\'' }
-      let(:definition) { Komenda::Definition.new(cmd) }
+      let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "1"; sleep(0.01); STDERR.print "2"; sleep(0.01); STDOUT.print "3";\'' }
+      let(:definition) { Komenda::Definition.new(command) }
       let(:runner) { Komenda::Runner.new }
       let(:result) { runner.run(definition) }
 
@@ -90,8 +90,8 @@ describe Komenda::Runner do
     end
 
     context 'when command outputs mixed stdout and stderr without delay' do
-      let(:cmd) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "1"; STDERR.print "2"; STDOUT.print "3";\'' }
-      let(:definition) { Komenda::Definition.new(cmd) }
+      let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "1"; STDERR.print "2"; STDOUT.print "3";\'' }
+      let(:definition) { Komenda::Definition.new(command) }
       let(:runner) { Komenda::Runner.new }
       let(:result) { runner.run(definition) }
 
@@ -109,8 +109,8 @@ describe Komenda::Runner do
     end
 
     context 'when environment variables are passed' do
-      let(:cmd) { 'echo "foo=${FOO}"' }
-      let(:definition) { Komenda::Definition.new(cmd, {:env => {:FOO => 'hello'}}) }
+      let(:command) { 'echo "foo=${FOO}"' }
+      let(:definition) { Komenda::Definition.new(command, {:env => {:FOO => 'hello'}}) }
       let(:runner) { Komenda::Runner.new }
       let(:result) { runner.run(definition) }
 

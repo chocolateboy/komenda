@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Komenda do
 
   describe '.run' do
-    let(:cmd) { double(:cmd) }
+    let(:command) { double(:command) }
     let(:options) { double(:options) }
     let(:runner) { double(Komenda::Runner) }
     let(:definition) { double(Komenda::Definition) }
@@ -11,10 +11,10 @@ describe Komenda do
 
     it 'initializes, runs and returns a new command' do
       expect(Komenda::Runner).to receive(:new).once.with(no_args) { runner }
-      expect(Komenda::Definition).to receive(:new).once.with(cmd, options) { definition }
+      expect(Komenda::Definition).to receive(:new).once.with(command, options) { definition }
       expect(runner).to receive(:run).once.with(definition) { result }
 
-      expect(Komenda.run(cmd, options)).to eq(result)
+      expect(Komenda.run(command, options)).to eq(result)
     end
   end
 

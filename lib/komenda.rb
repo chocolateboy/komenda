@@ -6,11 +6,11 @@ require 'komenda/result'
 
 module Komenda
 
-  # @param [String] cmd
+  # @param [String] command
   # @param [Hash] options
   # @return [Komenda::Result]
-  def self.run(cmd, options = {})
-    definition = Komenda::Definition.new(cmd, options)
+  def self.run(command, options = {})
+    definition = Komenda::Definition.new(command, options)
     runner = Komenda::Runner.new
     runner.run(definition)
   end
