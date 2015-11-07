@@ -26,4 +26,14 @@ describe Komenda::ProcessBuilder do
     end
   end
 
+  describe '#start' do
+    let(:process_builder) { Komenda::ProcessBuilder.new('my command') }
+    let(:process) { double(Komenda::Process) }
+
+    it 'creates a process' do
+      expect(Komenda::Process).to receive(:new).once.with(process_builder) { process }
+      expect(process_builder.start).to eq(process)
+    end
+  end
+
 end

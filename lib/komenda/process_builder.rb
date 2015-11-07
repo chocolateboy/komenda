@@ -16,5 +16,10 @@ module Komenda
       @env = Hash[options[:env].to_hash.map { |k, v| [String(k), String(v)] }]
     end
 
+    # @return [Komenda::Process]
+    def start
+      Komenda::Process.new(self)
+    end
+
   end
 end
