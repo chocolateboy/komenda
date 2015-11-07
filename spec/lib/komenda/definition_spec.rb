@@ -3,13 +3,13 @@ require 'spec_helper'
 describe Komenda::Definition do
 
   describe '#initialize' do
-    let(:cmd) { 'my command' }
+    let(:command) { 'my command' }
 
     context 'when passing an ENV' do
-      let(:definition) { Komenda::Definition.new(cmd, {:env => {:foo => 'hello', 'bar' => 12}}) }
+      let(:definition) { Komenda::Definition.new(command, {:env => {:foo => 'hello', 'bar' => 12}}) }
 
-      it 'sets the cmd' do
-        expect(definition.cmd).to eq(cmd)
+      it 'sets the command' do
+        expect(definition.command).to eq(command)
       end
 
       it 'coerces and sets the environment' do
@@ -18,7 +18,7 @@ describe Komenda::Definition do
     end
 
     context 'when not passing options' do
-      let(:definition) { Komenda::Definition.new(cmd) }
+      let(:definition) { Komenda::Definition.new(command) }
 
       it 'uses the env from the current process' do
         expect(definition.env).to eq(ENV.to_hash)
