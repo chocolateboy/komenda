@@ -60,3 +60,4 @@ TODO
 Add options for:
 - Passing STDIN
 - Making `run()` fail when exit status is not '0'
+- CWD
