@@ -2,17 +2,18 @@ module Komenda
   class Process
 
     attr_reader :process_builder
+    attr_reader :output
+    attr_reader :exit_status
 
     # @param [ProcessBuilder] process_builder
     def initialize(process_builder)
       @process_builder = process_builder
+      @output = {:stdout => '', :stderr => '', :combined => ''}
+      @exit_status = nil
     end
 
     # @return [Komenda::Result]
     def run
-      output = {:stdout => '', :stderr => '', :combined => ''}
-      status = nil
-
       Open3.popen3(process_builder.env, process_builder.command) do |stdin, stdout, stderr, wait_thr|
         stdin.close
 
@@ -26,17 +27,17 @@ module Komenda
               streams_read_open.delete(stream)
             else
               data = stream.readpartial(4096)
-              output[:stdout] += data if stdout === stream
-              output[:stderr] += data if stderr === stream
-              output[:combined] += data
+              @output[:stdout] += data if stdout === stream
+              @output[:stderr] += data if stderr === stream
+              @output[:combined] += data
             end
           end
         end until streams_read_open.empty?
 
-        status = wait_thr.value
+        @exit_status = wait_thr.value
       end
 
-      Komenda::Result.new(output, status)
+      Komenda::Result.new(output, exit_status)
     end
 
   end
