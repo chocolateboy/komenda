@@ -1,9 +1,15 @@
 module Komenda
   class Process
 
-    # @param [Komenda::ProcessBuilder] process_builder
+    attr_reader :process_builder
+
+    # @param [ProcessBuilder] process_builder
+    def initialize(process_builder)
+      @process_builder = process_builder
+    end
+
     # @return [Komenda::Result]
-    def run(process_builder)
+    def run
       output = {:stdout => '', :stderr => '', :combined => ''}
       status = nil
 
