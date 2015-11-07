@@ -1,5 +1,5 @@
 module Komenda
-  class Runner
+  class Process
 
     # @param [Komenda::ProcessBuilder] process_builder
     # @return [Komenda::Result]
