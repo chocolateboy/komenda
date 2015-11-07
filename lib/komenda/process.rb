@@ -11,6 +11,9 @@ module Komenda
       @output = {:stdout => '', :stderr => '', :combined => ''}
       @exit_status = nil
 
+      on(:stdout) { |data| @output[:stdout] += data }
+      on(:stderr) { |data| @output[:stderr] += data }
+      on(:output) { |data| @output[:combined] += data }
       process_builder.events.each do |event|
         on(event[:type], &event[:listener])
       end
@@ -50,10 +53,6 @@ module Komenda
               emit(:stdout, data) if stdout === stream
               emit(:stderr, data) if stderr === stream
               emit(:output, data)
-
-              @output[:stdout] += data if stdout === stream
-              @output[:stderr] += data if stderr === stream
-              @output[:combined] += data
             end
           end
         end until streams_read_open.empty?
