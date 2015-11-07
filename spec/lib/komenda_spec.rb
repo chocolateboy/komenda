@@ -12,7 +12,7 @@ describe Komenda do
     it 'creates and runs a process and returns a result' do
       expect(Komenda::ProcessBuilder).to receive(:new).once.with(command, options) { process_builder }
       expect(Komenda::Process).to receive(:new).once.with(process_builder) { process }
-      expect(process).to receive(:run).once.with(no_args) { result }
+      expect(process).to receive(:wait_for).once.with(no_args) { result }
 
       expect(Komenda.run(command, options)).to eq(result)
     end

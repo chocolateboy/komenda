@@ -1,19 +1,33 @@
 module Komenda
   class Process
 
-    attr_reader :process_builder
     attr_reader :output
     attr_reader :exit_status
 
     # @param [ProcessBuilder] process_builder
     def initialize(process_builder)
-      @process_builder = process_builder
       @output = {:stdout => '', :stderr => '', :combined => ''}
       @exit_status = nil
+
+      @thread = Thread.new { run_process(process_builder) }
+      @thread.abort_on_exception = true
     end
 
     # @return [Komenda::Result]
-    def run
+    def wait_for
+      @thread.join
+      Komenda::Result.new(output, exit_status)
+    end
+
+    # @return [TrueClass, FalseClass]
+    def running?
+      @thread.alive?
+    end
+
+    private
+
+    # @param [ProcessBuilder] process_builder
+    def run_process(process_builder)
       Open3.popen3(process_builder.env, process_builder.command) do |stdin, stdout, stderr, wait_thr|
         stdin.close
 
@@ -36,8 +50,6 @@ module Komenda
 
         @exit_status = wait_thr.value
       end
-
-      Komenda::Result.new(output, exit_status)
     end
 
   end

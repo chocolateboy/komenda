@@ -12,7 +12,7 @@ module Komenda
   def self.run(command, options = {})
     process_builder = Komenda::ProcessBuilder.new(command, options)
     process = Komenda::Process.new(process_builder)
-    process.run
+    process.wait_for
   end
 
 end
