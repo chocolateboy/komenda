@@ -100,6 +100,24 @@ describe Komenda::Process do
     end
   end
 
+  context 'when popen3 fails' do
+    let(:process_builder) { Komenda::ProcessBuilder.new('echo -n "hello"') }
+    let(:process) { Komenda::Process.new(process_builder) }
+    before { allow(Open3).to receive(:popen3).and_raise(StandardError, 'popen3 failed') }
+
+    describe '#start' do
+      it 'returns a result' do
+        expect(process.start).to be_a(Thread)
+      end
+    end
+
+    describe '#wait_for' do
+      it 'raises an error' do
+        expect { process.wait_for }.to raise_error(StandardError, /popen3 failed/)
+      end
+    end
+  end
+
   describe '#emit' do
     let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world";\'' }
     let(:process_builder) { Komenda::ProcessBuilder.new(command) }
@@ -137,9 +155,20 @@ describe Komenda::Process do
       expect(callback).to receive(:call).once.ordered.with(an_instance_of(Komenda::Result))
       process.wait_for
     end
+
+    context 'when popen3 fails' do
+      it 'emits event on exception' do
+        allow(Open3).to receive(:popen3).and_raise(StandardError, 'popen3 failed')
+        callback = double(Proc)
+        process.on(:error) { |d| callback.call(d) }
+
+        expect(callback).to receive(:call).once.with(an_instance_of(StandardError))
+        process.wait_for rescue nil
+      end
+    end
   end
 
-  describe '#wait_for' do
+  describe '#run_process' do
 
     context 'when command exits successfully' do
       let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world";\'' }

@@ -45,6 +45,7 @@ The following events are emitted:
 - **`.on(:stderr) { |output| }`**: When data is available on STDERR
 - **`.on(:output) { |output| }`**: When data is available on STDOUT or STDERR
 - **`.on(:exit) { |result| }`**: When the process finishes
+- **`.on(:error) { |exception| }`**: In case execution fails
 
 Development
 -----------
