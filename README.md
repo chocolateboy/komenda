@@ -24,6 +24,7 @@ result.pid      # => 32157
 
 The `run()` method has a second argument `options`, which expects these keys:
 - **`env`** (Hash): The environment variables to use. Defaults to the current process' environment.
+- **`cwd`** (String): Directory to change to before running the process. Defaults to `nil`.
 
 ### Advanced usage
 The `create()` method creates a `Process` which can be `start()`ed (in a Thread) or `wait_for()`ed until finished.
@@ -64,4 +65,3 @@ TODO
 Add options for:
 - Passing STDIN
 - Making `run()` fail when exit status is not '0'
-- CWD

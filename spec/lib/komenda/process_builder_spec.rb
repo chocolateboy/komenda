@@ -7,9 +7,10 @@ describe Komenda::ProcessBuilder do
 
     context 'when passing an ENV' do
       let(:env) { {:foo => 'hello', 'bar' => 12} }
+      let(:cwd) { '/tmp/foo' }
       let(:on_stdout) { Proc.new {} }
       let(:events) { {:stdout => on_stdout} }
-      let(:process_builder) { Komenda::ProcessBuilder.new(command, {:env => env, :events => events}) }
+      let(:process_builder) { Komenda::ProcessBuilder.new(command, {:env => env, :cwd => cwd, :events => events}) }
 
       it 'sets the command' do
         expect(process_builder.command).to eq(command)
@@ -17,6 +18,10 @@ describe Komenda::ProcessBuilder do
 
       it 'coerces and sets the environment' do
         expect(process_builder.env).to eq({'foo' => 'hello', 'bar' => '12'})
+      end
+
+      it 'sets the cwd' do
+        expect(process_builder.cwd).to eq(cwd)
       end
 
       it 'sets events' do
@@ -27,8 +32,12 @@ describe Komenda::ProcessBuilder do
     context 'when not passing options' do
       let(:process_builder) { Komenda::ProcessBuilder.new(command) }
 
-      it 'uses the env from the current process' do
+      it 'uses the ENV from the current process' do
         expect(process_builder.env).to eq(ENV.to_hash)
+      end
+
+      it 'sets an empty CWD' do
+        expect(process_builder.cwd).to eq(nil)
       end
     end
   end

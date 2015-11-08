@@ -284,6 +284,18 @@ describe Komenda::Process do
         expect(result.stdout).to eq("foo=hello\n")
       end
     end
+
+    context 'when a CWD is passed' do
+      let (:tempdir) { File.realpath(Dir.mktmpdir) }
+      let(:command) { 'echo "pwd=${PWD}"' }
+      let(:process_builder) { Komenda::ProcessBuilder.new(command, {:cwd => tempdir}) }
+      let(:process) { Komenda::Process.new(process_builder) }
+      let(:result) { process.wait_for }
+
+      it 'Changes the directory' do
+        expect(result.stdout).to eq("pwd=#{tempdir}\n")
+      end
+    end
   end
 
 end

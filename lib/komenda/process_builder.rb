@@ -3,6 +3,7 @@ module Komenda
 
     attr_reader :command
     attr_reader :env
+    attr_reader :cwd
     attr_reader :events
 
     # @param [String] command
@@ -10,12 +11,14 @@ module Komenda
     def initialize(command, options = {})
       defaults = {
         :env => ENV.to_hash,
-        :events => {}
+        :cwd => nil,
+        :events => {},
       }
       options = defaults.merge(options)
 
       @command = String(command)
       @env = Hash[options[:env].to_hash.map { |k, v| [String(k), String(v)] }]
+      @cwd = options[:cwd].nil? ? nil : String(options[:cwd])
       @events = Hash[options[:events].to_hash.map { |k, v| [k.to_sym, v.to_proc] }]
     end
 

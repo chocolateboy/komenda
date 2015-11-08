@@ -61,7 +61,11 @@ module Komenda
     # @param [ProcessBuilder] process_builder
     def run_process(process_builder)
       begin
-        run_popen3(process_builder)
+        if process_builder.cwd.nil?
+          run_popen3(process_builder)
+        else
+          Dir.chdir(process_builder.cwd) { run_popen3(process_builder) }
+        end
       rescue Exception => exception
         emit(:error, exception)
         raise exception
