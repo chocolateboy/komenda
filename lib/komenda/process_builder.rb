@@ -6,7 +6,7 @@ module Komenda
     attr_reader :cwd
     attr_reader :events
 
-    # @param [String] command
+    # @param [String, String[]] command
     # @param [Hash] options
     def initialize(command, options = {})
       defaults = {
@@ -16,7 +16,7 @@ module Komenda
       }
       options = defaults.merge(options)
 
-      @command = String(command)
+      @command = command.is_a?(Array) ? command.map { |v| String(v) } : String(command)
       @env = Hash[options[:env].to_hash.map { |k, v| [String(k), String(v)] }]
       @cwd = options[:cwd].nil? ? nil : String(options[:cwd])
       @events = Hash[options[:events].to_hash.map { |k, v| [k.to_sym, v.to_proc] }]

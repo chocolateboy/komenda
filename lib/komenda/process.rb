@@ -74,7 +74,7 @@ module Komenda
 
     # @param [ProcessBuilder] process_builder
     def run_popen3(process_builder)
-      Open3.popen3(process_builder.env, process_builder.command) do |stdin, stdout, stderr, wait_thr|
+      Open3.popen3(process_builder.env, *process_builder.command) do |stdin, stdout, stderr, wait_thr|
         stdin.close
 
         streams_read_open = [stdout, stderr]

@@ -296,6 +296,17 @@ describe Komenda::Process do
         expect(result.stdout).to eq("pwd=#{tempdir}\n")
       end
     end
+
+    context 'when arguments are passed in an array' do
+      let(:command) { ['echo', '-n', 'hello\'world'] }
+      let(:process_builder) { Komenda::ProcessBuilder.new(command) }
+      let(:process) { Komenda::Process.new(process_builder) }
+      let(:result) { process.wait_for }
+
+      it 'Passes the arguments' do
+        expect(result.stdout).to eq('hello\'world')
+      end
+    end
   end
 
 end
