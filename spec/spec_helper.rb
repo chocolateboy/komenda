@@ -1,1 +1,2 @@
 require 'komenda'
+require 'tmpdir'
