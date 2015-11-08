@@ -103,7 +103,7 @@ describe Komenda::Process do
   context 'when popen3 fails' do
     let(:process_builder) { Komenda::ProcessBuilder.new('echo -n "hello"') }
     let(:process) { Komenda::Process.new(process_builder) }
-    before { allow(Open3).to receive(:popen3).and_raise(StandardError, 'popen3 failed') }
+    before { allow(process).to receive(:run_popen3).and_raise(StandardError, 'popen3 failed') }
 
     describe '#start' do
       it 'returns a result' do
@@ -158,7 +158,7 @@ describe Komenda::Process do
 
     context 'when popen3 fails' do
       it 'emits event on exception' do
-        allow(Open3).to receive(:popen3).and_raise(StandardError, 'popen3 failed')
+        allow(process).to receive(:run_popen3).and_raise(StandardError, 'popen3 failed')
         callback = double(Proc)
         process.on(:error) { |d| callback.call(d) }
 

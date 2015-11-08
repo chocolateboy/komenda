@@ -61,32 +61,37 @@ module Komenda
     # @param [ProcessBuilder] process_builder
     def run_process(process_builder)
       begin
-        Open3.popen3(process_builder.env, process_builder.command) do |stdin, stdout, stderr, wait_thr|
-          stdin.close
-
-          streams_read_open = [stdout, stderr]
-          begin
-            streams_read_available, _, _ = IO.select(streams_read_open)
-
-            streams_read_available.each do |stream|
-              if stream.eof?
-                stream.close
-                streams_read_open.delete(stream)
-              else
-                data = stream.readpartial(4096)
-                emit(:stdout, data) if stdout === stream
-                emit(:stderr, data) if stderr === stream
-                emit(:output, data)
-              end
-            end
-          end until streams_read_open.empty?
-
-          @exit_status = wait_thr.value
-          emit(:exit, result)
-        end
+        run_popen3(process_builder)
       rescue Exception => exception
         emit(:error, exception)
         raise exception
+      end
+    end
+
+    # @param [ProcessBuilder] process_builder
+    def run_popen3(process_builder)
+      Open3.popen3(process_builder.env, process_builder.command) do |stdin, stdout, stderr, wait_thr|
+        stdin.close
+
+        streams_read_open = [stdout, stderr]
+        begin
+          streams_read_available, _, _ = IO.select(streams_read_open)
+
+          streams_read_available.each do |stream|
+            if stream.eof?
+              stream.close
+              streams_read_open.delete(stream)
+            else
+              data = stream.readpartial(4096)
+              emit(:stdout, data) if stdout === stream
+              emit(:stderr, data) if stderr === stream
+              emit(:output, data)
+            end
+          end
+        end until streams_read_open.empty?
+
+        @exit_status = wait_thr.value
+        emit(:exit, result)
       end
     end
 
