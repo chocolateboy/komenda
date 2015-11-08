@@ -129,6 +129,14 @@ describe Komenda::Process do
       expect(callback).to receive(:call).once.ordered.with('world')
       process.wait_for
     end
+
+    it 'emits event on exit' do
+      callback = double(Proc)
+      process.on(:exit) { |d| callback.call(d) }
+
+      expect(callback).to receive(:call).once.ordered.with(an_instance_of(Komenda::Result))
+      process.wait_for
+    end
   end
 
   describe '#wait_for' do

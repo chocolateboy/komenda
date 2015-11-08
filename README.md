@@ -44,6 +44,7 @@ The following events are emitted:
 - **`.on(:stdout) { |output| }`**: When data is available on STDOUT
 - **`.on(:stderr) { |output| }`**: When data is available on STDERR
 - **`.on(:output) { |output| }`**: When data is available on STDOUT or STDERR
+- **`.on(:exit) { |result| }`**: When the process finishes
 
 Development
 -----------

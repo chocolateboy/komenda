@@ -83,6 +83,7 @@ module Komenda
         end until streams_read_open.empty?
 
         @exit_status = wait_thr.value
+        emit(:exit, result)
       end
     end
 
