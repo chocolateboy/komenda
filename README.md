@@ -42,11 +42,11 @@ process.on(:stdout) { |output| puts "STDOUT: #{output}" }
 result = process.wait_for
 ```
 The following events are emitted:
-- **`.on(:stdout) { |output| }`**: When data is available on STDOUT
-- **`.on(:stderr) { |output| }`**: When data is available on STDERR
-- **`.on(:output) { |output| }`**: When data is available on STDOUT or STDERR
-- **`.on(:exit) { |result| }`**: When the process finishes
-- **`.on(:error) { |exception| }`**: In case execution fails
+- **`.on(:stdout) { |output| }`**: When data is available on STDOUT.
+- **`.on(:stderr) { |output| }`**: When data is available on STDERR.
+- **`.on(:output) { |output| }`**: When data is available on STDOUT or STDERR.
+- **`.on(:exit) { |result| }`**: When the process finishes.
+- **`.on(:error) { |exception| }`**: When process execution fails (e.g. executable file cannot be found).
 
 Development
 -----------
