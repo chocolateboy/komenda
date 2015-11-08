@@ -2,14 +2,15 @@ module Komenda
   class Process
 
     attr_reader :output
-    attr_reader :exit_status
 
     include EventEmitter
 
     # @param [ProcessBuilder] process_builder
     def initialize(process_builder)
+      @process_builder = process_builder
       @output = {:stdout => '', :stderr => '', :combined => ''}
       @exit_status = nil
+      @thread = nil
 
       on(:stdout) { |data| @output[:stdout] += data }
       on(:stderr) { |data| @output[:stderr] += data }
@@ -17,23 +18,47 @@ module Komenda
       process_builder.events.each do |event|
         on(event[:type], &event[:listener])
       end
+    end
 
-      @thread = Thread.new { run_process(process_builder) }
+    # @return [Thread]
+    def start
+      raise 'Already started' if is_started?
+      @thread = Thread.new { run_process(@process_builder) }
       @thread.abort_on_exception = true
+      @thread
     end
 
     # @return [Komenda::Result]
     def wait_for
+      start unless is_started?
       @thread.join
-      Komenda::Result.new(output, exit_status)
+      result
     end
 
     # @return [TrueClass, FalseClass]
     def running?
+      raise 'Process not started' unless is_started?
       @thread.alive?
     end
 
+    # @return [Komenda::Result]
+    def result
+      raise 'Process not started' unless is_started?
+      raise 'Process not finished' unless is_finished?
+      Komenda::Result.new(@output, @exit_status)
+    end
+
     private
+
+    # @return [TrueClass, FalseClass]
+    def is_started?
+      !@thread.nil?
+    end
+
+    # @return [TrueClass, FalseClass]
+    def is_finished?
+      !@exit_status.nil?
+    end
 
     # @param [ProcessBuilder] process_builder
     def run_process(process_builder)

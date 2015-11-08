@@ -16,17 +16,11 @@ module Komenda
 
       @command = String(command)
       @env = Hash[options[:env].to_hash.map { |k, v| [String(k), String(v)] }]
-      @events = []
-      options[:events].each { |type, listener| on(type, &listener) }
-    end
-
-    # @param [Symbol] event
-    def on(event, &block)
-      @events.push({:type => event, :listener => block})
+      @events = Hash[options[:events].to_hash.map { |k, v| [k.to_sym, v.to_proc] }]
     end
 
     # @return [Komenda::Process]
-    def start
+    def create
       Komenda::Process.new(self)
     end
 

@@ -6,37 +6,108 @@ describe Komenda::Process do
     let(:process_builder) { Komenda::ProcessBuilder.new('echo -n "hello"') }
     let(:process) { Komenda::Process.new(process_builder) }
 
-    it 'starts a running process' do
-      expect(process.running?).to eq(true)
+    it 'creates a process with empty output' do
+      expect(process.output).to eq({:stdout => '', :stderr => '', :combined => ''})
     end
   end
 
-  describe '#running?' do
+  context 'when just created' do
     let(:process_builder) { Komenda::ProcessBuilder.new('echo -n "hello"') }
     let(:process) { Komenda::Process.new(process_builder) }
 
-    context 'when process is running' do
+    describe '#start' do
+      it 'returns a thread' do
+        expect(process.start).to be_a(Thread)
+      end
+    end
+
+    describe '#wait_for' do
+      it 'returns a result' do
+        expect(process.wait_for).to be_a(Komenda::Result)
+      end
+    end
+
+    describe '#running?' do
+      it 'raises an error' do
+        expect { process.running? }.to raise_error(StandardError, /not started/)
+      end
+    end
+
+    describe '#result' do
+      it 'raises an error' do
+        expect { process.result }.to raise_error(StandardError, /not started/)
+      end
+    end
+  end
+
+  context 'when started' do
+    let(:process_builder) { Komenda::ProcessBuilder.new('echo -n "hello"') }
+    let(:process) { Komenda::Process.new(process_builder) }
+    before { process.start }
+
+    describe '#start' do
+      it 'does not start again' do
+        expect { process.start }.to raise_error(StandardError, /Already started/)
+      end
+    end
+
+    describe '#wait_for' do
+      it 'returns a result' do
+        expect(process.wait_for).to be_a(Komenda::Result)
+      end
+    end
+
+    describe '#running?' do
       it 'returns true' do
         expect(process.running?).to eq(true)
       end
     end
 
-    context 'when process is finished' do
+    describe '#result' do
+      it 'raises an error' do
+        expect { process.result }.to raise_error(StandardError, /not finished/)
+      end
+    end
+  end
+
+  context 'when finished' do
+    let(:process_builder) { Komenda::ProcessBuilder.new('echo -n "hello"') }
+    let(:process) { Komenda::Process.new(process_builder) }
+    before { process.wait_for }
+
+    describe '#start' do
+      it 'does not start again' do
+        expect { process.start }.to raise_error(StandardError, /Already started/)
+      end
+    end
+
+    describe '#wait_for' do
+      it 'returns a result' do
+        expect(process.wait_for).to be_a(Komenda::Result)
+      end
+    end
+
+    describe '#running?' do
       it 'returns false' do
-        process.wait_for
         expect(process.running?).to eq(false)
+      end
+    end
+
+    describe '#result' do
+      it 'returns a result' do
+        expect(process.result).to be_a(Komenda::Result)
       end
     end
   end
 
   describe '#emit' do
     let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world";\'' }
+    let(:process_builder) { Komenda::ProcessBuilder.new(command) }
+    let(:process) { Komenda::Process.new(process_builder) }
 
     it 'emits event on stdout' do
       callback = double(Proc)
-      process_builder = Komenda::ProcessBuilder.new(command)
-      process_builder.on(:stdout) { |d| callback.call(d) }
-      process = Komenda::Process.new(process_builder)
+      process.on(:stdout) { |d| callback.call(d) }
 
       expect(callback).to receive(:call).once.with('hello')
       process.wait_for
@@ -44,9 +115,7 @@ describe Komenda::Process do
 
     it 'emits event on stderr' do
       callback = double(Proc)
-      process_builder = Komenda::ProcessBuilder.new(command)
-      process_builder.on(:stderr) { |d| callback.call(d) }
-      process = Komenda::Process.new(process_builder)
+      process.on(:stderr) { |d| callback.call(d) }
 
       expect(callback).to receive(:call).once.with('world')
       process.wait_for
@@ -54,9 +123,7 @@ describe Komenda::Process do
 
     it 'emits event on output' do
       callback = double(Proc)
-      process_builder = Komenda::ProcessBuilder.new(command)
-      process_builder.on(:output) { |d| callback.call(d) }
-      process = Komenda::Process.new(process_builder)
+      process.on(:output) { |d| callback.call(d) }
 
       expect(callback).to receive(:call).once.ordered.with('hello')
       expect(callback).to receive(:call).once.ordered.with('world')
@@ -180,6 +247,6 @@ describe Komenda::Process do
         expect(result.stdout).to eq("foo=hello\n")
       end
     end
-
   end
+
 end

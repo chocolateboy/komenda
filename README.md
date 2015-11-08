@@ -26,22 +26,24 @@ The `run()` method has a second argument `options`, which expects these keys:
 - **`env`** (Hash): The environment variables to use. Defaults to the current process' environment.
 
 ### Advanced usage
-The `build()` method creates a `ProcessBuilder` which can be used to `start()` a process in a separate thread.
-To wait for the process to finish `wait_for()` can be used:
+The `create()` method creates a `Process` which can be `start()`ed (in a Thread) or `wait_for()`ed until finished.
+Waiting for a process will implicitly start it.
 ```ruby
-process_builder = Komenda.build('date')
-process = process_builder.start
+process = Komenda.create('date')
+thread = process.start
 result = process.wait_for
 ```
 
-With `ProcessBuilder.on()`, event callbacks can be registered. The callback gets executed when the process writes output:
+Event callbacks can be registered with `Process.on()`, for example for when output is written.
 ```ruby
-process_builder = Komenda::ProcessBuilder.new('date')
-process_builder.on(:stdout) { |output| puts "STDOUT: #{output}" }
-process_builder.on(:stderr) { |output| puts "STDERR: #{output}" }
-process_builder.on(:output) { |output| puts "Output: #{output}" }
-result = process_builder.start.wait_for
+process = Komenda.create('date')
+process.on(:stdout) { |output| puts "STDOUT: #{output}" }
+result = process.wait_for
 ```
+The following events are emitted:
+- **`.on(:stdout) { |output| }`**: When data is available on STDOUT
+- **`.on(:stderr) { |output| }`**: When data is available on STDERR
+- **`.on(:output) { |output| }`**: When data is available on STDOUT or STDERR
 
 Development
 -----------

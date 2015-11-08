@@ -20,7 +20,7 @@ describe Komenda::ProcessBuilder do
       end
 
       it 'sets events' do
-        expect(process_builder.events).to eq([{:type => :stdout, :listener => on_stdout}])
+        expect(process_builder.events).to eq({:stdout => on_stdout})
       end
     end
 
@@ -33,13 +33,13 @@ describe Komenda::ProcessBuilder do
     end
   end
 
-  describe '#start' do
+  describe '#create' do
     let(:process_builder) { Komenda::ProcessBuilder.new('my command') }
     let(:process) { double(Komenda::Process) }
 
     it 'creates a process' do
       expect(Komenda::Process).to receive(:new).once.with(process_builder) { process }
-      expect(process_builder.start).to eq(process)
+      expect(process_builder.create).to eq(process)
     end
   end
 
