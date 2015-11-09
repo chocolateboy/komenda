@@ -32,12 +32,17 @@ The `run()` method has a second argument `options`, which expects these keys:
 - **`cwd`** (String): Directory to change to before running the process. Defaults to `nil`.
 
 ### Advanced usage
-The `create()` method creates a `Process` which can be `start()`ed (in a Thread) or `wait_for()`ed until finished.
-Waiting for a process will implicitly start it.
+The `create()` method creates a `Process` which can be `start()`ed (in a Thread) and then `wait_for()`ed until finished.
 ```ruby
 process = Komenda.create('date')
 thread = process.start
 result = process.wait_for
+```
+
+To start a process and wait for it to finish, call the process' `run()` method:
+```
+process = Komenda.create('date')
+result = process.run
 ```
 
 Event callbacks can be registered with `Process.on()`, for example for when output is written.

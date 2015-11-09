@@ -20,7 +20,7 @@ module Komenda
   # @return [Komenda::Result]
   def self.run(command, options = {})
     process_builder = Komenda::ProcessBuilder.new(command, options)
-    process_builder.create.wait_for
+    process_builder.create.run
   end
 
 end

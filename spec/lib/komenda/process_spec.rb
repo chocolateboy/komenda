@@ -22,8 +22,14 @@ describe Komenda::Process do
     end
 
     describe '#wait_for' do
+      it 'raises an error' do
+        expect { process.wait_for }.to raise_error(StandardError, /not started/)
+      end
+    end
+
+    describe '#run' do
       it 'returns a result' do
-        expect(process.wait_for).to be_a(Komenda::Result)
+        expect(process.run).to be_a(Komenda::Result)
       end
     end
 
@@ -57,6 +63,12 @@ describe Komenda::Process do
       end
     end
 
+    describe '#run' do
+      it 'returns a result' do
+        expect(process.run).to be_a(Komenda::Result)
+      end
+    end
+
     describe '#running?' do
       it 'returns true' do
         expect(process.running?).to eq(true)
@@ -73,7 +85,7 @@ describe Komenda::Process do
   context 'when finished' do
     let(:process_builder) { Komenda::ProcessBuilder.new('echo -n "hello"') }
     let(:process) { Komenda::Process.new(process_builder) }
-    before { process.wait_for }
+    before { process.run }
 
     describe '#start' do
       it 'does not start again' do
@@ -84,6 +96,12 @@ describe Komenda::Process do
     describe '#wait_for' do
       it 'returns a result' do
         expect(process.wait_for).to be_a(Komenda::Result)
+      end
+    end
+
+    describe '#run' do
+      it 'returns a result' do
+        expect(process.run).to be_a(Komenda::Result)
       end
     end
 
@@ -111,9 +129,9 @@ describe Komenda::Process do
       end
     end
 
-    describe '#wait_for' do
+    describe '#run' do
       it 'raises an error' do
-        expect { process.wait_for }.to raise_error(StandardError, /popen3 failed/)
+        expect { process.run }.to raise_error(StandardError, /popen3 failed/)
       end
     end
   end
@@ -128,7 +146,7 @@ describe Komenda::Process do
       process.on(:stdout) { |d| callback.call(d) }
 
       expect(callback).to receive(:call).once.with('hello')
-      process.wait_for
+      process.run
     end
 
     it 'emits event on stderr' do
@@ -136,7 +154,7 @@ describe Komenda::Process do
       process.on(:stderr) { |d| callback.call(d) }
 
       expect(callback).to receive(:call).once.with('world')
-      process.wait_for
+      process.run
     end
 
     it 'emits event on output' do
@@ -145,7 +163,7 @@ describe Komenda::Process do
 
       expect(callback).to receive(:call).once.ordered.with('hello')
       expect(callback).to receive(:call).once.ordered.with('world')
-      process.wait_for
+      process.run
     end
 
     it 'emits event on exit' do
@@ -153,7 +171,7 @@ describe Komenda::Process do
       process.on(:exit) { |d| callback.call(d) }
 
       expect(callback).to receive(:call).once.ordered.with(an_instance_of(Komenda::Result))
-      process.wait_for
+      process.run
     end
 
     context 'when popen3 fails' do
@@ -163,7 +181,7 @@ describe Komenda::Process do
         process.on(:error) { |d| callback.call(d) }
 
         expect(callback).to receive(:call).once.with(an_instance_of(StandardError))
-        process.wait_for rescue nil
+        process.run rescue nil
       end
     end
   end
@@ -174,7 +192,7 @@ describe Komenda::Process do
       let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world";\'' }
       let(:process_builder) { Komenda::ProcessBuilder.new(command) }
       let(:process) { Komenda::Process.new(process_builder) }
-      let(:result) { process.wait_for }
+      let(:result) { process.run }
 
       it 'returns a result' do
         expect(result).to be_a(Komenda::Result)
@@ -209,7 +227,7 @@ describe Komenda::Process do
       let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world"; exit(1);\'' }
       let(:process_builder) { Komenda::ProcessBuilder.new(command) }
       let(:process) { Komenda::Process.new(process_builder) }
-      let(:result) { process.wait_for }
+      let(:result) { process.run }
 
       it 'returns a result' do
         expect(result).to be_a(Komenda::Result)
@@ -240,7 +258,7 @@ describe Komenda::Process do
       let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "1"; sleep(0.01); STDERR.print "2"; sleep(0.01); STDOUT.print "3";\'' }
       let(:process_builder) { Komenda::ProcessBuilder.new(command) }
       let(:process) { Komenda::Process.new(process_builder) }
-      let(:result) { process.wait_for }
+      let(:result) { process.run }
 
       it 'sets the standard output' do
         expect(result.stdout).to eq('13')
@@ -259,7 +277,7 @@ describe Komenda::Process do
       let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "1"; STDERR.print "2"; STDOUT.print "3";\'' }
       let(:process_builder) { Komenda::ProcessBuilder.new(command) }
       let(:process) { Komenda::Process.new(process_builder) }
-      let(:result) { process.wait_for }
+      let(:result) { process.run }
 
       it 'sets the standard output' do
         expect(result.stdout).to eq('13')
@@ -278,7 +296,7 @@ describe Komenda::Process do
       let(:command) { 'echo "foo=${FOO}"' }
       let(:process_builder) { Komenda::ProcessBuilder.new(command, {:env => {:FOO => 'hello'}}) }
       let(:process) { Komenda::Process.new(process_builder) }
-      let(:result) { process.wait_for }
+      let(:result) { process.run }
 
       it 'sets the environment variables' do
         expect(result.stdout).to eq("foo=hello\n")
@@ -290,7 +308,7 @@ describe Komenda::Process do
       let(:command) { 'echo "pwd=${PWD}"' }
       let(:process_builder) { Komenda::ProcessBuilder.new(command, {:cwd => tempdir}) }
       let(:process) { Komenda::Process.new(process_builder) }
-      let(:result) { process.wait_for }
+      let(:result) { process.run }
 
       it 'Changes the directory' do
         expect(result.stdout).to eq("pwd=#{tempdir}\n")
@@ -301,7 +319,7 @@ describe Komenda::Process do
       let(:command) { ['echo', '-n', 'hello\'world'] }
       let(:process_builder) { Komenda::ProcessBuilder.new(command) }
       let(:process) { Komenda::Process.new(process_builder) }
-      let(:result) { process.wait_for }
+      let(:result) { process.run }
 
       it 'Passes the arguments' do
         expect(result.stdout).to eq('hello\'world')

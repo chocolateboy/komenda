@@ -28,9 +28,15 @@ module Komenda
 
     # @return [Komenda::Result]
     def wait_for
-      start unless is_started?
+      raise 'Process not started' unless is_started?
       @thread.join
       result
+    end
+
+    # @return [Komenda::Result]
+    def run
+      start unless is_started?
+      wait_for
     end
 
     # @return [TrueClass, FalseClass]
