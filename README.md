@@ -49,7 +49,7 @@ Event callbacks can be registered with `Process.on()`, for example for when outp
 ```ruby
 process = Komenda.create('date')
 process.on(:stdout) { |output| puts "STDOUT: #{output}" }
-result = process.wait_for
+result = process.run
 ```
 The following events are emitted:
 - **`.on(:stdout) { |output| }`**: When data is available on STDOUT.
