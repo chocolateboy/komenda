@@ -1,5 +1,5 @@
 require 'open3'
-require 'event_emitter'
+require 'events'
 
 require 'komenda/process_builder'
 require 'komenda/process'

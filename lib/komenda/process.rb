@@ -3,7 +3,7 @@ module Komenda
 
     attr_reader :output
 
-    include EventEmitter
+    include Events::Emitter
 
     # @param [ProcessBuilder] process_builder
     def initialize(process_builder)
