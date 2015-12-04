@@ -1,6 +1,9 @@
-Komenda [![Build Status](https://travis-ci.org/cargomedia/komenda.svg)](https://travis-ci.org/cargomedia/komenda)
+Komenda
 =======
-Komenda is a convenience wrapper around `Open3` to run shell commands in Ruby.
+Komenda is a convenience wrapper to run shell commands in Ruby.
+
+[![Build Status](https://img.shields.io/travis/cargomedia/komenda/master.svg)](https://travis-ci.org/cargomedia/komenda)
+[![Gem Version](https://img.shields.io/gem/v/komenda.svg)](https://rubygems.org/gems/komenda)
 
 Usage
 -----
