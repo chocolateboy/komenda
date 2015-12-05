@@ -1,6 +1,5 @@
 module Komenda
   class Result
-
     # @param [Hash] output
     # @option output_streams [String] :stdout
     # @option output_streams [String] :stderr
@@ -35,6 +34,5 @@ module Komenda
     def pid
       @status.pid
     end
-
   end
 end

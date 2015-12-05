@@ -1,6 +1,5 @@
 module Komenda
   class ProcessBuilder
-
     attr_reader :command
     attr_reader :env
     attr_reader :cwd
@@ -10,16 +9,16 @@ module Komenda
     # @param [Hash] options
     def initialize(command, options = {})
       defaults = {
-        :env => ENV.to_hash,
-        :cwd => nil,
-        :events => {},
+        env: ENV.to_hash,
+        cwd: nil,
+        events: {}
       }
       options = defaults.merge(options)
 
-      @command = command.is_a?(Array) ? command.map { |v| String(v) } : String(command)
-      @env = Hash[options[:env].to_hash.map { |k, v| [String(k), String(v)] }]
-      @cwd = options[:cwd].nil? ? nil : String(options[:cwd])
-      @events = Hash[options[:events].to_hash.map { |k, v| [k.to_sym, v.to_proc] }]
+      self.command = command
+      self.env = options[:env]
+      self.cwd = options[:cwd]
+      self.events = options[:events]
     end
 
     # @return [Komenda::Process]
@@ -27,5 +26,28 @@ module Komenda
       Komenda::Process.new(self)
     end
 
+    # @param [String, Array<String>] command
+    def command=(command)
+      if command.is_a?(Array)
+        @command = command.map { |v| String(v) }
+      else
+        @command = String(command)
+      end
+    end
+
+    # @param [Hash] env
+    def env=(env)
+      @env = Hash[env.to_hash.map { |k, v| [String(k), String(v)] }]
+    end
+
+    # @param [String] cwd
+    def cwd=(cwd = nil)
+      @cwd = cwd.nil? ? nil : String(cwd)
+    end
+
+    # @param [Hash<Symbol, Proc>]
+    def events=(events)
+      @events = Hash[events.to_hash.map { |k, v| [k.to_sym, v.to_proc] }]
+    end
   end
 end

@@ -1,6 +1,5 @@
 module Komenda
   class Process
-
     attr_reader :output
 
     include Events::Emitter
@@ -8,7 +7,7 @@ module Komenda
     # @param [ProcessBuilder] process_builder
     def initialize(process_builder)
       @process_builder = process_builder
-      @output = {:stdout => '', :stderr => '', :combined => ''}
+      @output = { stdout: '', stderr: '', combined: '' }
       @exit_status = nil
       @thread = nil
 
@@ -22,88 +21,96 @@ module Komenda
 
     # @return [Thread]
     def start
-      raise 'Already started' if is_started?
+      fail 'Already started' if started?
       @thread = Thread.new { run_process(@process_builder) }
     end
 
     # @return [Komenda::Result]
     def wait_for
-      raise 'Process not started' unless is_started?
+      fail 'Process not started' unless started?
       @thread.join
       result
     end
 
     # @return [Komenda::Result]
     def run
-      start unless is_started?
+      start unless started?
       wait_for
     end
 
     # @return [TrueClass, FalseClass]
     def running?
-      raise 'Process not started' unless is_started?
+      fail 'Process not started' unless started?
       @thread.alive?
     end
 
     # @return [Komenda::Result]
     def result
-      raise 'Process not started' unless is_started?
-      raise 'Process not finished' unless is_finished?
+      fail 'Process not started' unless started?
+      fail 'Process not finished' unless finished?
       Komenda::Result.new(@output, @exit_status)
     end
 
     private
 
     # @return [TrueClass, FalseClass]
-    def is_started?
+    def started?
       !@thread.nil?
     end
 
     # @return [TrueClass, FalseClass]
-    def is_finished?
+    def finished?
       !@exit_status.nil?
     end
 
     # @param [ProcessBuilder] process_builder
     def run_process(process_builder)
-      begin
-        if process_builder.cwd.nil?
-          run_popen3(process_builder)
-        else
-          Dir.chdir(process_builder.cwd) { run_popen3(process_builder) }
-        end
-      rescue Exception => exception
-        emit(:error, exception)
-        raise exception
+      if process_builder.cwd.nil?
+        run_popen3(process_builder)
+      else
+        Dir.chdir(process_builder.cwd) { run_popen3(process_builder) }
       end
+    rescue Exception => exception
+      emit(:error, exception)
+      raise exception
     end
 
     # @param [ProcessBuilder] process_builder
     def run_popen3(process_builder)
       Open3.popen3(process_builder.env, *process_builder.command) do |stdin, stdout, stderr, wait_thr|
         stdin.close
-
-        streams_read_open = [stdout, stderr]
-        begin
-          streams_read_available, _, _ = IO.select(streams_read_open)
-
-          streams_read_available.each do |stream|
-            if stream.eof?
-              stream.close
-              streams_read_open.delete(stream)
-            else
-              data = stream.readpartial(4096)
-              emit(:stdout, data) if stdout === stream
-              emit(:stderr, data) if stderr === stream
-              emit(:output, data)
-            end
-          end
-        end until streams_read_open.empty?
-
+        read_streams([stdout, stderr]) do |data, stream|
+          emit(:output, data)
+          emit(:stdout, data) if stdout == stream
+          emit(:stderr, data) if stderr == stream
+        end
         @exit_status = wait_thr.value
         emit(:exit, result)
       end
     end
 
+    # @param [Array<IO>] streams
+    def read_streams(streams)
+      select_streams(streams) do |stream|
+        if stream.eof?
+          stream.close
+        else
+          data = stream.readpartial(4096)
+          yield(data, stream)
+        end
+      end
+    end
+
+    # @param [Array<IO>] streams
+    def select_streams(streams)
+      loop do
+        streams_available, = IO.select(streams)
+        streams_available.each do |stream|
+          yield(stream)
+        end
+        streams.reject!(&:closed?)
+        break if streams.empty?
+      end
+    end
   end
 end

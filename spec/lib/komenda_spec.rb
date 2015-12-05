@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Komenda do
-
   describe '.create' do
     let(:command) { double(:command) }
     let(:options) { double(:options) }
@@ -31,5 +30,4 @@ describe Komenda do
       expect(Komenda.run(command, options)).to eq(result)
     end
   end
-
 end

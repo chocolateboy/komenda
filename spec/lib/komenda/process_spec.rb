@@ -1,13 +1,12 @@
 require 'spec_helper'
 
 describe Komenda::Process do
-
   describe '#initialize' do
     let(:process_builder) { Komenda::ProcessBuilder.new('echo -n "hello"') }
     let(:process) { Komenda::Process.new(process_builder) }
 
     it 'creates a process with empty output' do
-      expect(process.output).to eq({:stdout => '', :stderr => '', :combined => ''})
+      expect(process.output).to eq(stdout: '', stderr: '', combined: '')
     end
   end
 
@@ -181,13 +180,16 @@ describe Komenda::Process do
         process.on(:error) { |d| callback.call(d) }
 
         expect(callback).to receive(:call).once.with(an_instance_of(StandardError))
-        process.run rescue nil
+        begin
+          process.run
+        rescue
+          nil
+        end
       end
     end
   end
 
   describe '#run_process' do
-
     context 'when command exits successfully' do
       let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; STDOUT.print "hello"; sleep(0.01); STDERR.print "world";\'' }
       let(:process_builder) { Komenda::ProcessBuilder.new(command) }
@@ -287,14 +289,14 @@ describe Komenda::Process do
         expect(result.stderr).to eq('2')
       end
 
-      it 'sets the combined output', :skip => 'doesn\'t work, probably because the ruby loop is too slow (both IO objects become available at the same time)' do
+      it 'sets the combined output', skip: 'doesn\'t work, probably because the ruby loop is too slow (both IO objects become available at the same time)' do
         expect(result.output).to eq('123')
       end
     end
 
     context 'when environment variables are passed' do
       let(:command) { 'echo "foo=${FOO}"' }
-      let(:process_builder) { Komenda::ProcessBuilder.new(command, {:env => {:FOO => 'hello'}}) }
+      let(:process_builder) { Komenda::ProcessBuilder.new(command, env: { FOO: 'hello' }) }
       let(:process) { Komenda::Process.new(process_builder) }
       let(:result) { process.run }
 
@@ -304,9 +306,9 @@ describe Komenda::Process do
     end
 
     context 'when a CWD is passed' do
-      let (:tempdir) { File.realpath(Dir.mktmpdir) }
+      let(:tempdir) { File.realpath(Dir.mktmpdir) }
       let(:command) { 'echo "pwd=${PWD}"' }
-      let(:process_builder) { Komenda::ProcessBuilder.new(command, {:cwd => tempdir}) }
+      let(:process_builder) { Komenda::ProcessBuilder.new(command, cwd: tempdir) }
       let(:process) { Komenda::Process.new(process_builder) }
       let(:result) { process.run }
 
@@ -326,5 +328,4 @@ describe Komenda::Process do
       end
     end
   end
-
 end
