@@ -1,0 +1,9 @@
+Metrics/LineLength:
+  Max: 160
+
+Style/Documentation:
+  Enabled: false
+
+Lint/RescueException:
+  Exclude:
+    - 'lib/komenda/process.rb'

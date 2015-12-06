@@ -6,7 +6,6 @@ require 'komenda/process'
 require 'komenda/result'
 
 module Komenda
-
   # @param [String] command
   # @param [Hash] options
   # @return [Komenda::Process]
@@ -22,5 +21,4 @@ module Komenda
     process_builder = Komenda::ProcessBuilder.new(command, options)
     process_builder.create.run
   end
-
 end

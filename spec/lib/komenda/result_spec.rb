@@ -1,9 +1,8 @@
 require 'spec_helper'
 
 describe Komenda::Result do
-
   describe '#initialize' do
-    let(:output) { {:stdout => 'my stdout', :stderr => 'my stderr', :combined => 'my combined output'} }
+    let(:output) { { stdout: 'my stdout', stderr: 'my stderr', combined: 'my combined output' } }
     let(:status) { double(Process::Status, exitstatus: 12, success?: false, pid: 123) }
     let(:result) { Komenda::Result.new(output, status) }
 
@@ -45,5 +44,4 @@ describe Komenda::Result do
       expect(result.pid).to eq(123)
     end
   end
-
 end

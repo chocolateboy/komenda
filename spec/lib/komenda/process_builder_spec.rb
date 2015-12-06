@@ -1,23 +1,22 @@
 require 'spec_helper'
 
 describe Komenda::ProcessBuilder do
-
   describe '#initialize' do
     let(:command) { 'my command' }
 
     context 'when passing options' do
-      let(:env) { {:foo => 'hello', 'bar' => 12} }
+      let(:env) { { :foo => 'hello', 'bar' => 12 } }
       let(:cwd) { '/tmp/foo' }
-      let(:on_stdout) { Proc.new {} }
-      let(:events) { {:stdout => on_stdout} }
-      let(:process_builder) { Komenda::ProcessBuilder.new(command, {:env => env, :cwd => cwd, :events => events}) }
+      let(:on_stdout) { proc {} }
+      let(:events) { { stdout: on_stdout } }
+      let(:process_builder) { Komenda::ProcessBuilder.new(command, env: env, cwd: cwd, events: events) }
 
       it 'sets the command' do
         expect(process_builder.command).to eq(command)
       end
 
       it 'coerces and sets the environment' do
-        expect(process_builder.env).to eq({'foo' => 'hello', 'bar' => '12'})
+        expect(process_builder.env).to eq('foo' => 'hello', 'bar' => '12')
       end
 
       it 'sets the cwd' do
@@ -25,7 +24,7 @@ describe Komenda::ProcessBuilder do
       end
 
       it 'sets events' do
-        expect(process_builder.events).to eq({:stdout => on_stdout})
+        expect(process_builder.events).to eq(stdout: on_stdout)
       end
     end
 
@@ -42,7 +41,7 @@ describe Komenda::ProcessBuilder do
     end
 
     context 'when passing command as an array' do
-      let(:command) { ['my', 'command'] }
+      let(:command) { %w(my command) }
       let(:process_builder) { Komenda::ProcessBuilder.new(command) }
 
       it 'sets the command' do
@@ -60,5 +59,4 @@ describe Komenda::ProcessBuilder do
       expect(process_builder.create).to eq(process)
     end
   end
-
 end
