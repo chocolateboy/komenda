@@ -8,8 +8,7 @@ module Komenda
     def initialize(process_builder)
       @process_builder = process_builder
       @output = { stdout: '', stderr: '', combined: '' }
-      @exit_status = nil
-      @thread = nil
+      @exit_status = @thread = @pid = nil
 
       on(:stdout) { |data| @output[:stdout] += data }
       on(:stderr) { |data| @output[:stderr] += data }
@@ -36,6 +35,12 @@ module Komenda
     def run
       start unless started?
       wait_for
+    end
+
+    # @return [Integer]
+    def pid
+      fail 'No PID available' if @pid.nil?
+      @pid
     end
 
     # @return [TrueClass, FalseClass]
@@ -78,6 +83,7 @@ module Komenda
     # @param [ProcessBuilder] process_builder
     def run_popen3(process_builder)
       Open3.popen3(process_builder.env, *process_builder.command) do |stdin, stdout, stderr, wait_thr|
+        @pid = wait_thr.pid
         stdin.close
         read_streams([stdout, stderr]) do |data, stream|
           emit(:output, data)

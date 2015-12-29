@@ -43,6 +43,12 @@ describe Komenda::Process do
         expect { process.result }.to raise_error(StandardError, /not started/)
       end
     end
+
+    describe '#pid' do
+      it 'raises an error' do
+        expect { process.pid }.to raise_error(StandardError, /No PID available/)
+      end
+    end
   end
 
   context 'when started' do
@@ -115,6 +121,12 @@ describe Komenda::Process do
         expect(process.result).to be_a(Komenda::Result)
       end
     end
+
+    describe '#pid' do
+      it 'returns a number' do
+        expect(process.pid).to be_a(Integer)
+      end
+    end
   end
 
   context 'when popen3 fails' do
@@ -171,6 +183,32 @@ describe Komenda::Process do
 
       expect(callback).to receive(:call).once.ordered.with(an_instance_of(Komenda::Result))
       process.run
+    end
+
+    context 'when running a long-running process' do
+      let(:command) { 'sleep 3' }
+
+      it 'emits event :exit when process is killed' do
+        callback = double(Proc)
+        process.on(:exit) { |d| callback.call(d) }
+
+        expect(callback).to receive(:call).once.ordered.with(an_instance_of(Komenda::Result))
+        process.start
+        sleep(0.01)
+        Process.kill('TERM', process.pid)
+        sleep(0.01)
+      end
+
+      it 'emits event :exit when process is killed forcefully' do
+        callback = double(Proc)
+        process.on(:exit) { |d| callback.call(d) }
+
+        expect(callback).to receive(:call).once.ordered.with(an_instance_of(Komenda::Result))
+        process.start
+        sleep(0.01)
+        Process.kill('KILL', process.pid)
+        sleep(0.01)
+      end
     end
 
     context 'when popen3 fails' do
