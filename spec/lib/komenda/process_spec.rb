@@ -407,10 +407,10 @@ describe Komenda::Process do
   end
 
   describe '#kill' do
-    let(:command) { 'ruby -e \'STDOUT.sync=STDERR.sync=true; puts("Started"); begin; sleep 1; rescue SignalException => e; puts("Received signal #{e.signo}"); end\'' }
+    let(:ruby_program) { 'puts("Started"); begin; sleep 1; rescue SignalException => e; puts("Received signal #{e.signo}"); end' }
+    let(:command) { "ruby -e 'STDOUT.sync=STDERR.sync=true; #{ruby_program}'" }
     let(:process_builder) { Komenda::ProcessBuilder.new(command) }
     let(:process) { Komenda::Process.new(process_builder) }
-
 
     it 'sends a signal to the process' do
       started = false
