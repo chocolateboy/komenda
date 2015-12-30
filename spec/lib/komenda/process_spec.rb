@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Komenda::Process do
+  after { process.kill('KILL') if process.running? }
+
   describe '#initialize' do
     let(:process_builder) { Komenda::ProcessBuilder.new('echo -n "hello"') }
     let(:process) { Komenda::Process.new(process_builder) }
@@ -33,8 +35,8 @@ describe Komenda::Process do
     end
 
     describe '#running?' do
-      it 'raises an error' do
-        expect { process.running? }.to raise_error(StandardError, /not started/)
+      it 'returns false' do
+        expect(process.running?).to eq(false)
       end
     end
 
@@ -43,12 +45,55 @@ describe Komenda::Process do
         expect { process.result }.to raise_error(StandardError, /not started/)
       end
     end
+
+    describe '#pid' do
+      it 'raises an error' do
+        expect { process.pid }.to raise_error(StandardError, /No PID available/)
+      end
+    end
   end
 
   context 'when started' do
     let(:process_builder) { Komenda::ProcessBuilder.new('echo -n "hello"') }
     let(:process) { Komenda::Process.new(process_builder) }
     before { process.start }
+
+    describe '#start' do
+      it 'does not start again' do
+        expect { process.start }.to raise_error(StandardError, /Already started/)
+      end
+    end
+
+    describe '#wait_for' do
+      it 'returns a result' do
+        expect(process.wait_for).to be_a(Komenda::Result)
+      end
+    end
+
+    describe '#run' do
+      it 'returns a result' do
+        expect(process.run).to be_a(Komenda::Result)
+      end
+    end
+
+    describe '#running?' do
+      it 'returns false' do
+        expect(process.running?).to eq(false)
+      end
+    end
+
+    describe '#result' do
+      it 'raises an error' do
+        expect { process.result }.to raise_error(StandardError, /not finished/)
+      end
+    end
+  end
+
+  context 'when running' do
+    let(:process_builder) { Komenda::ProcessBuilder.new('echo -n "hello"; sleep 0.1;') }
+    let(:process) { Komenda::Process.new(process_builder) }
+    before { process.start }
+    before { wait_for { process.running? }.to eq(true) }
 
     describe '#start' do
       it 'does not start again' do
@@ -115,6 +160,12 @@ describe Komenda::Process do
         expect(process.result).to be_a(Komenda::Result)
       end
     end
+
+    describe '#pid' do
+      it 'returns a number' do
+        expect(process.pid).to be_a(Integer)
+      end
+    end
   end
 
   context 'when popen3 fails' do
@@ -171,6 +222,32 @@ describe Komenda::Process do
 
       expect(callback).to receive(:call).once.ordered.with(an_instance_of(Komenda::Result))
       process.run
+    end
+
+    context 'when running a long-running process' do
+      let(:command) { 'sleep 3' }
+
+      it 'emits event :exit when process is killed' do
+        callback = double(Proc)
+        process.on(:exit) { |d| callback.call(d) }
+
+        expect(callback).to receive(:call).once.ordered.with(an_instance_of(Komenda::Result))
+        process.start
+        sleep(0.01)
+        Process.kill('TERM', process.pid)
+        sleep(0.01)
+      end
+
+      it 'emits event :exit when process is killed forcefully' do
+        callback = double(Proc)
+        process.on(:exit) { |d| callback.call(d) }
+
+        expect(callback).to receive(:call).once.ordered.with(an_instance_of(Komenda::Result))
+        process.start
+        sleep(0.01)
+        Process.kill('KILL', process.pid)
+        sleep(0.01)
+      end
     end
 
     context 'when popen3 fails' do
@@ -326,6 +403,38 @@ describe Komenda::Process do
       it 'Passes the arguments' do
         expect(result.stdout).to eq('hello\'world')
       end
+    end
+  end
+
+  describe '#kill' do
+    let(:ruby_program) do
+      [
+        'STDOUT.sync=STDERR.sync=true;',
+        'STDOUT.print("Started with PID #{Process.pid}\n")',
+        'begin',
+        ' sleep 1',
+        'rescue SignalException => e',
+        ' STDOUT.print("Received signal #{e.signo}\n")',
+        'end',
+        'STDOUT.print("Stopped\n")'
+      ].join(';')
+    end
+    let(:command) { ['ruby', '-e', ruby_program] }
+    let(:process_builder) { Komenda::ProcessBuilder.new(command) }
+    let(:process) { Komenda::Process.new(process_builder) }
+
+    it 'sends a signal to the process' do
+      started = false
+      process.on(:stdout) { started = true }
+
+      process.start
+      wait_for { process.running? }.to eq(true)
+      wait_for { started }.to eq(true)
+      process.kill('INT')
+
+      result = process.wait_for
+      expect(process.running?).to eq(false)
+      expect(result.stdout).to match('Received signal 2')
     end
   end
 end
