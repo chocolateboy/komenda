@@ -43,10 +43,14 @@ module Komenda
       @pid
     end
 
+    # @param [Integer, String]
+    def kill(signal = 'TERM')
+      ::Process.kill(signal, pid)
+    end
+
     # @return [TrueClass, FalseClass]
     def running?
-      fail 'Process not started' unless started?
-      @thread.alive?
+      started? && !@pid.nil? && @thread.alive?
     end
 
     # @return [Komenda::Result]
