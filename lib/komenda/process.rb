@@ -50,7 +50,7 @@ module Komenda
 
     # @return [TrueClass, FalseClass]
     def running?
-      started? && !@pid.nil? && @thread.alive?
+      started? && !@pid.nil? && !finished?
     end
 
     # @return [Komenda::Result]
