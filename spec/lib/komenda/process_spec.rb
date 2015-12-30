@@ -412,7 +412,7 @@ describe Komenda::Process do
         'STDOUT.sync=STDERR.sync=true;',
         'STDOUT.print("Started with PID #{Process.pid}\n")',
         'begin',
-        ' sleep 100',
+        ' sleep 1',
         'rescue SignalException => e',
         ' STDOUT.print("Received signal #{e.signo}\n")',
         'end',
