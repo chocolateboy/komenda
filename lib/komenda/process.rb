@@ -74,19 +74,19 @@ module Komenda
 
     # @param [ProcessBuilder] process_builder
     def run_process(process_builder)
-      if process_builder.cwd.nil?
-        run_popen3(process_builder)
-      else
-        Dir.chdir(process_builder.cwd) { run_popen3(process_builder) }
-      end
+      opts = {}
+      opts[:chdir] = process_builder.cwd unless process_builder.cwd.nil?
+      run_popen3(process_builder.env, process_builder.command, opts)
     rescue Exception => exception
       emit(:error, exception)
       raise exception
     end
 
-    # @param [ProcessBuilder] process_builder
-    def run_popen3(process_builder)
-      Open3.popen3(process_builder.env, *process_builder.command) do |stdin, stdout, stderr, wait_thr|
+    # @param [Hash] env
+    # @param [Array<String>] command
+    # @param [Hash] opts
+    def run_popen3(env, command, opts)
+      Open3.popen3(env, *command, opts) do |stdin, stdout, stderr, wait_thr|
         @pid = wait_thr.pid
         stdin.close
         read_streams([stdout, stderr]) do |data, stream|
