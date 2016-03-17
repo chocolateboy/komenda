@@ -28,7 +28,7 @@ module Komenda
     alias_method :status, :exitstatus
 
     def success?
-      @status.success?
+      exitstatus == 0
     end
 
     def pid
