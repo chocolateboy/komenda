@@ -28,11 +28,22 @@ describe Komenda::Result do
   end
 
   describe '#success' do
-    let(:status) { double(Process::Status, success?: false) }
     let(:result) { Komenda::Result.new({}, status) }
 
-    it 'returns the success' do
-      expect(result.success?).to eq(false)
+    context 'when the exitstatus is 0' do
+      let(:status) { double(Process::Status, exitstatus: 0) }
+
+      it 'returns true' do
+        expect(result.success?).to eq(true)
+      end
+    end
+
+    context 'when the exitstatus is 123' do
+      let(:status) { double(Process::Status, exitstatus: 123) }
+
+      it 'returns false' do
+        expect(result.success?).to eq(false)
+      end
     end
   end
 
