@@ -414,7 +414,7 @@ describe Komenda::Process do
         'begin',
         ' sleep 1',
         'rescue SignalException => e',
-        ' STDOUT.print("Received signal `#{e.signo}`\n")',
+        ' STDOUT.print("Received signal\n")',
         'end',
         'STDOUT.print("Stopped\n")'
       ].join(';')
@@ -434,7 +434,7 @@ describe Komenda::Process do
 
       result = process.wait_for
       expect(process.running?).to eq(false)
-      expect(result.stdout).to match('Received signal `2`')
+      expect(result.stdout).to match('Received signal')
     end
   end
 end
