@@ -410,11 +410,11 @@ describe Komenda::Process do
     let(:ruby_program) do
       [
         'STDOUT.sync=STDERR.sync=true;',
-        'STDOUT.print("Started with PID #{Process.pid}\n")',
+        'STDOUT.print("Started with PID `#{Process.pid}`\n")',
         'begin',
         ' sleep 1',
         'rescue SignalException => e',
-        ' STDOUT.print("Received signal #{e.signo}\n")',
+        ' STDOUT.print("Received signal `#{e.signo}`\n")',
         'end',
         'STDOUT.print("Stopped\n")'
       ].join(';')
@@ -434,7 +434,7 @@ describe Komenda::Process do
 
       result = process.wait_for
       expect(process.running?).to eq(false)
-      expect(result.stdout).to match('Received signal 2')
+      expect(result.stdout).to match('Received signal `2`')
     end
   end
 end
