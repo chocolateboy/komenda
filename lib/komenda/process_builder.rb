@@ -1,7 +1,9 @@
 module Komenda
   class ProcessBuilder
     attr_reader :command
+
     attr_reader :env
+    attr_reader :reset_bundler_env
     attr_reader :cwd
     attr_reader :events
 
@@ -9,7 +11,8 @@ module Komenda
     # @param [Hash] options
     def initialize(command, options = {})
       defaults = {
-        env: ENV.to_hash,
+        env: {},
+        reset_bundler_env: true,
         cwd: nil,
         events: {}
       }
@@ -17,6 +20,7 @@ module Komenda
 
       self.command = command
       self.env = options[:env]
+      self.reset_bundler_env = options[:reset_bundler_env]
       self.cwd = options[:cwd]
       self.events = options[:events]
     end
@@ -40,6 +44,11 @@ module Komenda
       @env = Hash[env.to_hash.map { |k, v| [String(k), String(v)] }]
     end
 
+    # @param [Boolean] reset
+    def reset_bundler_env=(reset)
+      @reset_bundler_env = reset ? true : false
+    end
+
     # @param [String] cwd
     def cwd=(cwd = nil)
       @cwd = cwd.nil? ? nil : String(cwd)
@@ -48,6 +57,28 @@ module Komenda
     # @param [Hash<Symbol, Proc>]
     def events=(events)
       @events = Hash[events.to_hash.map { |k, v| [k.to_sym, v.to_proc] }]
+    end
+
+    # @return [Hash]
+    def env_final
+      if reset_bundler_env && Object.const_defined?('Bundler')
+        env_original = bundler_clean_env
+      else
+        env_original = ENV.to_hash
+      end
+      env_original.merge(env)
+    end
+
+    private
+
+    # @return [Hash]
+    def bundler_clean_env
+      if Bundler.methods(false).include?(:clean_env)
+        Bundler.clean_env
+      else
+        # For Bundler < 1.12.0
+        Bundler.with_clean_env { ENV.to_hash }
+      end
     end
   end
 end

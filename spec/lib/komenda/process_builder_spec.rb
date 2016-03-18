@@ -31,8 +31,8 @@ describe Komenda::ProcessBuilder do
     context 'when not passing options' do
       let(:process_builder) { Komenda::ProcessBuilder.new(command) }
 
-      it 'uses the ENV from the current process' do
-        expect(process_builder.env).to eq(ENV.to_hash)
+      it 'sets an empty ENV' do
+        expect(process_builder.env).to eq({})
       end
 
       it 'sets an empty CWD' do
@@ -57,6 +57,33 @@ describe Komenda::ProcessBuilder do
     it 'creates a process' do
       expect(Komenda::Process).to receive(:new).once.with(process_builder) { process }
       expect(process_builder.create).to eq(process)
+    end
+  end
+
+  describe '#env_final' do
+    let(:env_custom) { {} }
+    let(:env_original) { { 'FOO' => 'foo1', 'BAR' => 'bar1' } }
+    let(:process_builder) { Komenda::ProcessBuilder.new('my command', env: env_custom) }
+    before { allow(ENV).to receive(:to_hash).and_return(env_original) }
+
+    it 'returns the original environment' do
+      expect(process_builder.env_final).to eq('FOO' => 'foo1', 'BAR' => 'bar1')
+    end
+
+    context 'when using Bundler' do
+      before { allow(Bundler).to receive(:clean_env).and_return('FOO' => 'foo2', 'BAR' => 'bar2') }
+
+      it 'returns the clean environment of Bundler' do
+        expect(process_builder.env_final).to eq('FOO' => 'foo2', 'BAR' => 'bar2')
+      end
+    end
+
+    context 'when passing additional environment variables' do
+      let(:env_custom) { { 'FOO' => 'foo3', 'MEGA' => 'mega3' } }
+
+      it 'merges in the additional variables' do
+        expect(process_builder.env_final).to eq('FOO' => 'foo3', 'BAR' => 'bar1', 'MEGA' => 'mega3')
+      end
     end
   end
 end
