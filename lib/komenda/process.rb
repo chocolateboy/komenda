@@ -76,7 +76,8 @@ module Komenda
     def run_process(process_builder)
       opts = {}
       opts[:chdir] = process_builder.cwd unless process_builder.cwd.nil?
-      run_popen3(process_builder.env, process_builder.command, opts)
+      opts[:unsetenv_others] = true
+      run_popen3(process_builder.env_final, process_builder.command, opts)
     rescue Exception => exception
       emit(:error, exception)
       raise exception
