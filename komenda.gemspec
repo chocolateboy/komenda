@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'komenda'
-  s.version = '0.1.4'
+  s.version = '0.1.5'
   s.summary = 'Convenience wrapper around `Open3` to run shell commands in Ruby.'
   s.description = 'Convenience wrapper around `Open3` to run shell commands in Ruby.'
   s.authors = ['Cargo Media', 'njam']
