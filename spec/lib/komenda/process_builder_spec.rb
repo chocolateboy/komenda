@@ -76,6 +76,14 @@ describe Komenda::ProcessBuilder do
       it 'returns the clean environment of Bundler' do
         expect(process_builder.env_final).to eq('FOO' => 'foo2', 'BAR' => 'bar2')
       end
+
+      context 'when enabling "use_bundler_env"' do
+        let(:process_builder) { Komenda::ProcessBuilder.new('my command', env: env_custom, use_bundler_env: true) }
+
+        it 'returns the original environment' do
+          expect(process_builder.env_final).to eq('FOO' => 'foo1', 'BAR' => 'bar1')
+        end
+      end
     end
 
     context 'when passing additional environment variables' do

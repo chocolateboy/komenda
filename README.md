@@ -32,7 +32,7 @@ result.output   # => "hello"
 
 The `run()` method has a second argument `options`, which accepts these optional keys:
 - **`env`** (Hash): Additional environment variables to set.
-- **`reset_bundler_env`** (Boolean): Reset environment variables from your current Ruby bundle using `Bundler.clean_env`. Defaults to `true`.
+- **`use_bundler_env`** (Boolean): Use the environment variable of the current [bundle](http://bundler.io/). Defaults to `false`.
 - **`cwd`** (String): Directory to change to before running the process.
 
 ### Advanced usage
