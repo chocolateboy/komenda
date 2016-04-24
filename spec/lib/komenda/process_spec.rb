@@ -406,6 +406,21 @@ describe Komenda::Process do
     end
   end
 
+  context 'when enabling "fail_on_fail"' do
+    describe '#run' do
+      let(:process_builder) { Komenda::ProcessBuilder.new(command, fail_on_fail: true) }
+      let(:process) { Komenda::Process.new(process_builder) }
+
+      context 'when the command exits with non-zero status' do
+        let(:command) { 'echo "hello"; exit 1' }
+
+        it 'raises an error' do
+          expect { process.run }.to raise_error(StandardError, /Process failed with exit status `1` and output:\nhello/)
+        end
+      end
+    end
+  end
+
   describe '#kill' do
     let(:ruby_program) do
       [
