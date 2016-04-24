@@ -5,6 +5,7 @@ module Komenda
     attr_reader :env
     attr_reader :use_bundler_env
     attr_reader :cwd
+    attr_reader :fail_on_fail
     attr_reader :events
 
     # @param [String, String[]] command
@@ -14,6 +15,7 @@ module Komenda
         env: {},
         use_bundler_env: false,
         cwd: nil,
+        fail_on_fail: false,
         events: {}
       }
       options = defaults.merge(options)
@@ -22,6 +24,7 @@ module Komenda
       self.env = options[:env]
       self.use_bundler_env = options[:use_bundler_env]
       self.cwd = options[:cwd]
+      self.fail_on_fail = options[:fail_on_fail]
       self.events = options[:events]
     end
 
@@ -52,6 +55,11 @@ module Komenda
     # @param [String] cwd
     def cwd=(cwd = nil)
       @cwd = cwd.nil? ? nil : String(cwd)
+    end
+
+    # @param [Boolean] fail_on_fail
+    def fail_on_fail=(fail_on_fail)
+      @fail_on_fail = fail_on_fail ? true : false
     end
 
     # @param [Hash<Symbol, Proc>]

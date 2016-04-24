@@ -34,6 +34,7 @@ The `run()` method has a second argument `options`, which accepts these optional
 - **`env`** (Hash): Additional environment variables to set.
 - **`use_bundler_env`** (Boolean): Use the environment variable of the current [bundle](http://bundler.io/). Defaults to `false`.
 - **`cwd`** (String): Directory to change to before running the process.
+- **`fail_on_fail`** (Boolean): Whether to raise an error when the exit code is not "0". Defaults to `false`.
 
 ### Advanced usage
 The `create()` method creates a `Process` which can be `run()` (or `start()`ed as a Thread).
