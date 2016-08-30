@@ -32,7 +32,7 @@ result.output   # => "hello"
 
 The `run()` method has a second argument `options`, which accepts these optional keys:
 - **`env`** (Hash): Additional environment variables to set.
-- **`use_bundler_env`** (Boolean): Use the environment variable of the current [bundle](http://bundler.io/). Defaults to `false`.
+- **`use_bundler_env`** (Boolean): Use the environment variables of the current [bundle](http://bundler.io/). Defaults to `false`.
 - **`cwd`** (String): Directory to change to before running the process.
 - **`fail_on_fail`** (Boolean): Whether to raise an error when the exit code is not "0". Defaults to `false`.
 
@@ -67,9 +67,3 @@ Run the tests:
 ```
 bundle exec rake spec
 ```
-
-TODO
-----
-Add options for:
-- Passing STDIN
-- Making `run()` fail when exit status is not '0'
