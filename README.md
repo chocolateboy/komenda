@@ -39,7 +39,7 @@ result = Komenda.run('date', fail_on_fail: true)
 
 The following options can be configured:
 - **`env`** (Hash): Additional environment variables to set.
-- **`use_bundler_env`** (Boolean): Use the environment variables of the current [bundle](http://bundler.io/). Defaults to `false`.
+- **`use_bundler_env`** (Boolean): Use the [environment of the current bundle](http://www.cargomedia.ch/2016/03/18/reset-bundler-environment.html). Defaults to `false`.
 - **`cwd`** (String): Directory to change to before running the process.
 - **`fail_on_fail`** (Boolean): Whether to raise an error when the exit code is not "0". Defaults to `false`.
 
