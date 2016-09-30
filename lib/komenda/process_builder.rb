@@ -35,11 +35,11 @@ module Komenda
 
     # @param [String, Array<String>] command
     def command=(command)
-      if command.is_a?(Array)
-        @command = command.map { |v| String(v) }
-      else
-        @command = String(command)
-      end
+      @command = if command.is_a?(Array)
+                   command.map { |v| String(v) }
+                 else
+                   String(command)
+                 end
     end
 
     # @param [Hash] env
@@ -69,11 +69,11 @@ module Komenda
 
     # @return [Hash]
     def env_final
-      if !use_bundler_env && Object.const_defined?('Bundler')
-        env_original = bundler_clean_env
-      else
-        env_original = ENV.to_hash
-      end
+      env_original = if !use_bundler_env && Object.const_defined?('Bundler')
+                       bundler_clean_env
+                     else
+                       ENV.to_hash
+                     end
       env_original.merge(env)
     end
 

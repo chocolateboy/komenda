@@ -20,16 +20,16 @@ module Komenda
 
     # @return [Thread]
     def start
-      fail 'Already started' if started?
+      raise 'Already started' if started?
       @thread = Thread.new { run_process(@process_builder) }
     end
 
     # @return [Komenda::Result]
     def wait_for
-      fail 'Process not started' unless started?
+      raise 'Process not started' unless started?
       @thread.join
       if @process_builder.fail_on_fail && !result.success?
-        fail "Process failed with exit status `#{result.exitstatus}` and output:\n#{result.output}"
+        raise "Process failed with exit status `#{result.exitstatus}` and output:\n#{result.output}"
       end
       result
     end
@@ -42,7 +42,7 @@ module Komenda
 
     # @return [Integer]
     def pid
-      fail 'No PID available' if @pid.nil?
+      raise 'No PID available' if @pid.nil?
       @pid
     end
 
@@ -58,8 +58,8 @@ module Komenda
 
     # @return [Komenda::Result]
     def result
-      fail 'Process not started' unless started?
-      fail 'Process not finished' unless finished?
+      raise 'Process not started' unless started?
+      raise 'Process not finished' unless finished?
       Komenda::Result.new(@output, @exit_status)
     end
 

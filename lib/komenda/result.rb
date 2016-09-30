@@ -25,7 +25,7 @@ module Komenda
       @status.exitstatus
     end
 
-    alias_method :status, :exitstatus
+    alias status exitstatus
 
     def success?
       exitstatus == 0
