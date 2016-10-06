@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'komenda'
-  s.version = '0.1.6'
+  s.version = '0.1.7'
   s.summary = 'Convenience wrapper around `Open3` to run shell commands in Ruby.'
   s.description = 'Convenience wrapper around `Open3` to run shell commands in Ruby.'
   s.authors = ['Cargo Media', 'njam']
@@ -15,5 +15,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake', '~> 10.1'
   s.add_development_dependency 'rspec', '~> 2.0'
   s.add_development_dependency 'rspec-wait', '~> 0.0.8'
-  s.add_development_dependency 'rubocop', '~> 0.35.0'
+  s.add_development_dependency 'rubocop', '~> 0.41.2'
 end

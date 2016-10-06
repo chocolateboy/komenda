@@ -25,7 +25,7 @@ result.success? # => true
 result.pid      # => 32157
 ```
 The program and its arguments can be passed as an array:
-```ruby
+```ruby 
 result = Komenda.run(['echo', '-n', 'hello'])
 result.output   # => "hello"
 ```
