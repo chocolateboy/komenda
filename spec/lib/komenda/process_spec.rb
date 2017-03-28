@@ -302,7 +302,7 @@ describe Komenda::Process do
       end
 
       it 'sets the PID' do
-        expect(result.pid).to be_a(Fixnum)
+        expect(result.pid).to be_a(Integer)
       end
     end
 
