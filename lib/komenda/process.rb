@@ -28,7 +28,7 @@ module Komenda
     def wait_for
       raise 'Process not started' unless started?
       @thread.join
-      if @process_builder.fail_on_fail && !result.success?
+      if @process_builder.fail_on_fail && result.error?
         raise "Process failed with exit status `#{result.exitstatus}` and output:\n#{result.output}"
       end
       result

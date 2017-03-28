@@ -297,6 +297,10 @@ describe Komenda::Process do
         expect(result.success?).to eq(true)
       end
 
+      it 'sets the error' do
+        expect(result.error?).to eq(false)
+      end
+
       it 'sets the PID' do
         expect(result.pid).to be_a(Fixnum)
       end
@@ -330,6 +334,10 @@ describe Komenda::Process do
 
       it 'sets the success' do
         expect(result.success?).to eq(false)
+      end
+
+      it 'sets the error' do
+        expect(result.error?).to eq(true)
       end
     end
 

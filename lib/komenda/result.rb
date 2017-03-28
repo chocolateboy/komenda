@@ -31,6 +31,10 @@ module Komenda
       exitstatus == 0
     end
 
+    def error?
+      exitstatus != 0
+    end
+
     def pid
       @status.pid
     end
