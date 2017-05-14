@@ -81,12 +81,17 @@ module Komenda
 
     # @return [Hash]
     def bundler_clean_env
-      if Bundler.methods(false).include?(:clean_env)
-        Bundler.clean_env
-      else
-        # For Bundler < 1.12.0
-        Bundler.with_clean_env { ENV.to_hash }
-      end
+      env = if Bundler.methods(false).include?(:clean_env)
+              Bundler.clean_env
+            else
+              # For Bundler < 1.12.0
+              Bundler.with_clean_env { ENV.to_hash }
+            end
+      # Work around limitations of `Bundler.clean_env`
+      env.delete('BUNDLER_VERSION')
+      env.delete('RUBYOPT') if env.key?('RUBYOPT') && env['RUBYOPT'] == ''
+      env.delete('RUBYLIB') if env.key?('RUBYLIB') && env['RUBYLIB'] == ''
+      env
     end
   end
 end

@@ -72,7 +72,7 @@ describe Komenda::ProcessBuilder do
     end
 
     context 'when using Bundler' do
-      before { allow(Bundler).to receive(:clean_env).and_return('FOO' => 'foo2', 'BAR' => 'bar2') }
+      before { allow(Bundler).to receive(:original_env).and_return('FOO' => 'foo2', 'BAR' => 'bar2') }
 
       it 'returns the clean environment of Bundler' do
         expect(process_builder.env_final).to eq('FOO' => 'foo2', 'BAR' => 'bar2')
