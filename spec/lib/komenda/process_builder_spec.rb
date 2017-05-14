@@ -65,6 +65,7 @@ describe Komenda::ProcessBuilder do
     let(:env_original) { { 'FOO' => 'foo1', 'BAR' => 'bar1' } }
     let(:process_builder) { Komenda::ProcessBuilder.new('my command', env: env_custom) }
     before { allow(ENV).to receive(:to_hash).and_return(env_original) }
+    before { allow(Bundler).to receive(:original_env).and_return(env_original) }
 
     it 'returns the original environment' do
       expect(process_builder.env_final).to eq('FOO' => 'foo1', 'BAR' => 'bar1')
