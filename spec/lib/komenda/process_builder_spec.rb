@@ -67,6 +67,7 @@ describe Komenda::ProcessBuilder do
 
     context 'when using Bundler' do
       before { allow(Bundler).to receive(:original_env).and_return(env_original) }
+      before { allow(Bundler).to receive(:with_original_env).and_return(env_original) } # Bundler < 1.12.0
 
       it 'returns the original environment' do
         expect(process_builder.env_final).to eq(env_original)

@@ -69,15 +69,19 @@ module Komenda
 
     # @return [Hash]
     def env_final
-      env_original = if !use_bundler_env && Object.const_defined?('Bundler')
-                       bundler_clean_env
-                     else
-                       ENV.to_hash
-                     end
       env_original.merge(env)
     end
 
     private
+
+    # @return [Hash]
+    def env_original
+      if !use_bundler_env && Object.const_defined?('Bundler')
+        bundler_clean_env
+      else
+        ENV.to_hash
+      end
+    end
 
     # @return [Hash]
     def bundler_clean_env
