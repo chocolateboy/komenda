@@ -22,6 +22,7 @@ result.stderr   # => ""
 result.output   # => "Tue Nov 26 14:45:03 EST 2013\n" (combined stdout + stderr)
 result.status   # => 0
 result.success? # => true
+result.error?   # => false
 result.pid      # => 32157
 ```
 The program and its arguments can be passed as an array:
