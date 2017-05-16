@@ -77,7 +77,7 @@ describe Komenda::ProcessBuilder do
         let(:process_builder) { Komenda::ProcessBuilder.new('my command', env: env_custom, use_bundler_env: true) }
 
         it 'includes Bundler variable' do
-          expect(process_builder.env_final).to have_key('BUNDLER_VERSION')
+          expect(process_builder.env_final).to have_key('BUNDLE_GEMFILE')
         end
       end
 
