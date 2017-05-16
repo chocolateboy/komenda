@@ -69,24 +69,33 @@ module Komenda
 
     # @return [Hash]
     def env_final
-      env_original = if !use_bundler_env && Object.const_defined?('Bundler')
-                       bundler_clean_env
-                     else
-                       ENV.to_hash
-                     end
       env_original.merge(env)
     end
 
     private
 
     # @return [Hash]
-    def bundler_clean_env
-      if Bundler.methods(false).include?(:clean_env)
-        Bundler.clean_env
+    def env_original
+      if !use_bundler_env && Object.const_defined?('Bundler')
+        bundler_clean_env
       else
-        # For Bundler < 1.12.0
-        Bundler.with_clean_env { ENV.to_hash }
+        ENV.to_hash
       end
+    end
+
+    # @return [Hash]
+    def bundler_clean_env
+      env = if Bundler.methods(false).include?(:clean_env)
+              Bundler.clean_env
+            else
+              # For Bundler < 1.12.0
+              Bundler.with_clean_env { ENV.to_hash }
+            end
+      # Work around limitations of `Bundler.clean_env`
+      env.delete('BUNDLER_VERSION')
+      env.delete('RUBYOPT') if env.key?('RUBYOPT') && env['RUBYOPT'] == ''
+      env.delete('RUBYLIB') if env.key?('RUBYLIB') && env['RUBYLIB'] == ''
+      env
     end
   end
 end

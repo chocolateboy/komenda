@@ -53,7 +53,10 @@ module Komenda
 
     # @return [TrueClass, FalseClass]
     def running?
-      started? && !@pid.nil? && !finished?
+      return false if @pid.nil?
+      1 == ::Process.kill(0, @pid)
+    rescue Errno::ESRCH
+      false
     end
 
     # @return [Komenda::Result]
