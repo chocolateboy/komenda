@@ -64,34 +64,28 @@ describe Komenda::ProcessBuilder do
     let(:env_custom) { {} }
     let(:env_original) { { 'FOO' => 'foo1', 'BAR' => 'bar1' } }
     let(:process_builder) { Komenda::ProcessBuilder.new('my command', env: env_custom) }
-    before { allow(ENV).to receive(:to_hash).and_return(env_original) }
-    before { allow(Bundler).to receive(:original_env).and_return(env_original) }
-
-    it 'returns the original environment' do
-      expect(process_builder.env_final).to eq('FOO' => 'foo1', 'BAR' => 'bar1')
-    end
 
     context 'when using Bundler' do
-      before { allow(Bundler).to receive(:original_env).and_return('FOO' => 'foo2', 'BAR' => 'bar2') }
+      before { allow(Bundler).to receive(:original_env).and_return(env_original) }
 
-      it 'returns the clean environment of Bundler' do
-        expect(process_builder.env_final).to eq('FOO' => 'foo2', 'BAR' => 'bar2')
+      it 'returns the original environment' do
+        expect(process_builder.env_final).to eq(env_original)
       end
 
       context 'when enabling "use_bundler_env"' do
         let(:process_builder) { Komenda::ProcessBuilder.new('my command', env: env_custom, use_bundler_env: true) }
 
-        it 'returns the original environment' do
-          expect(process_builder.env_final).to eq('FOO' => 'foo1', 'BAR' => 'bar1')
+        it 'includes Bundler variable' do
+          expect(process_builder.env_final).to have_key('BUNDLER_VERSION')
         end
       end
-    end
 
-    context 'when passing additional environment variables' do
-      let(:env_custom) { { 'FOO' => 'foo3', 'MEGA' => 'mega3' } }
+      context 'when passing additional environment variables' do
+        let(:env_custom) { { 'FOO' => 'foo3', 'MEGA' => 'mega3' } }
 
-      it 'merges in the additional variables' do
-        expect(process_builder.env_final).to eq('FOO' => 'foo3', 'BAR' => 'bar1', 'MEGA' => 'mega3')
+        it 'merges in the additional variables' do
+          expect(process_builder.env_final).to eq('FOO' => 'foo3', 'BAR' => 'bar1', 'MEGA' => 'mega3')
+        end
       end
     end
   end
