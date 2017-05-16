@@ -75,3 +75,9 @@ Run the tests:
 ```
 bundle exec rake spec
 ```
+
+Release a new version:
+
+1. Bump the version in `komenda.gemspec`, merge to master.
+2. Push a new tag to master.
+3. Release to RubyGems with `bundle exec rake release`.
