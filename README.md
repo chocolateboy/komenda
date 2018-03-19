@@ -1,3 +1,8 @@
+UNMAINTAINED
+============
+This project is not maintained anymore.
+If you want to take over contact us at tech@cargomedia.ch.
+
 Komenda
 =======
 Komenda is a convenience wrapper to run shell commands in Ruby.
