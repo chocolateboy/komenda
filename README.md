@@ -13,7 +13,7 @@ Run a command:
 Komenda.run('date')
 ```
 
-The `run()` method will block until the sub process finished.
+The `run()` method will block until the subprocess finishes.
 
 It will expose the output and exit status as a `Komenda::Result` value:
 
@@ -37,7 +37,7 @@ result.output   # => "hello"
 
 ### Run options
 
-The `run()` method has a second argument `options`.
+The `run()` method has a second `options` argument.
 
 ```ruby
 result = Komenda.run('date', fail_on_fail: true)
@@ -94,3 +94,9 @@ Release a new version:
 1. Bump the version in `komenda.gemspec`, merge to master.
 2. Push a new tag to master.
 3. Release to RubyGems with `bundle exec rake release`.
+
+## Copyright and License
+
+Copyright © 2015-2019 by [Cargo Media](http://www.cargomedia.ch/).
+
+This is free software; you can redistribute it and/or modify it under the terms of the [MIT License](https://opensource.org/licenses/MIT).
